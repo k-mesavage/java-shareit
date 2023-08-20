@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class ItemServiceImpl implements ItemService{
+public class ItemServiceImpl implements ItemService {
 
     private final ItemStorage storage;
     private final UserStorage userStorage;
@@ -35,6 +35,7 @@ public class ItemServiceImpl implements ItemService{
     public Item updateItem(Long itemId, Long userId, String params) {
         return storage.updateItem(itemId, userId, params);
     }
+
     @Override
     public Item getItemById(Long itemId) {
         return storage.getItemById(itemId);
