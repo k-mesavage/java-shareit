@@ -22,7 +22,7 @@ public class UserStorageImpl implements UserStorage {
 
     private static Map<Long, User> users = new HashMap<>();
     private static Long id = 0L;
-    private UserMapper mapper;
+    private final UserMapper mapper;
 
     @Override
     public User addUser(UserDto userDto) {

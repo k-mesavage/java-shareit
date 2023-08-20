@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    UserStorage storage;
+    private final UserStorage storage;
 
     @Override
     public User addUser(UserDto user) {

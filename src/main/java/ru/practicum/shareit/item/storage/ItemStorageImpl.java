@@ -22,7 +22,7 @@ public class ItemStorageImpl implements ItemStorage {
     private static Map<Long, Item> allItems = new HashMap<>();
     private static Long id = 0L;
 
-    private ItemMapper mapper;
+    private final ItemMapper mapper;
 
     @Override
     public Item addItem(ItemDto itemDto, User owner) {

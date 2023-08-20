@@ -16,8 +16,8 @@ import java.util.List;
 @AllArgsConstructor
 public class ItemServiceImpl implements ItemService{
 
-    ItemStorage storage;
-    UserStorage userStorage;
+    private final ItemStorage storage;
+    private final UserStorage userStorage;
 
     @Override
     public Item addItem(Long userId, ItemDto itemDto) {
