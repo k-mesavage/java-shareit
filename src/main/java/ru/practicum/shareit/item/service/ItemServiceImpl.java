@@ -21,7 +21,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item addItem(Long userId, Item item) {
         User user = userStorage.getUserById(userId);
-        if(user == null) {
+        if (user == null) {
             throw new ObjectNotFoundException("User");
         }
         return storage.addItem(item, user);
