@@ -10,6 +10,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -20,10 +21,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item addItem(Long userId, Item item) {
-        User user = userStorage.getUserById(userId);
-        if (user == null) {
-            throw new ObjectNotFoundException("User");
-        }
+        User user = Optional.ofNullable(userStorage.getUserById(userId))
+                .orElseThrow(() -> new ObjectNotFoundException("User"));
         return storage.addItem(item, user);
     }
 
@@ -49,6 +48,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> searchItems(String text) {
-        return storage.searchItems(text);
+        return storage.searchItems(text.toLowerCase());
     }
 }

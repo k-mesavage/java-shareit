@@ -13,44 +13,37 @@ import java.util.*;
 @AllArgsConstructor
 public class ItemStorageImpl implements ItemStorage {
 
-    private static final Map<Long, Map<Long, Item>> itemsMap = new HashMap<>();
-    private static final Map<Long, Item> allItems = new HashMap<>();
+    private final Map<Long, Map<Long, Item>> itemsMap = new HashMap<>();
+    private final Map<Long, Item> allItems = new HashMap<>();
     private static Long id = 0L;
 
     @Override
     public Item addItem(Item item, User owner) {
         item.setId(generateId());
         item.setOwner(owner);
-        Map<Long, Item> newItemMap = new HashMap<>();
-        newItemMap.put(item.getId(), item);
-        Map<Long, Item> userItems = itemsMap.get(owner.getId());
-        if (userItems != null) {
-            for (Item i : userItems.values()) {
-                newItemMap.put(i.getId(), i);
-            }
-        }
-        itemsMap.put(owner.getId(), newItemMap);
+        final Map<Long, Item> items = itemsMap.computeIfAbsent(owner.getId(), k -> new HashMap<>());
+        items.put(item.getId(), item);
         allItems.put(item.getId(), item);
         return item;
     }
 
     @Override
     public List<Item> getItemsByUserId(Long userId) {
-        return new ArrayList<>(itemsMap.get(userId).values());
+        return new ArrayList<>(itemsMap.getOrDefault(userId, new HashMap<>()).values());
     }
 
     @Override
     public Item getItemById(Long itemId) {
-        return allItems.get(itemId);
+        return Optional.of(allItems.get(itemId)).orElseThrow(() -> new ObjectNotFoundException("Item"));
     }
 
     @Override
     public Item updateItem(Long itemId, Long userId, ItemDto itemDto) {
-        Map<Long, Item> userItems = itemsMap.get(userId);
+        final Map<Long, Item> userItems = itemsMap.get(userId);
         if (userItems == null) {
             throw new ObjectNotFoundException("Items");
         }
-        Item updatedItem = userItems.get(itemId);
+        final Item updatedItem = userItems.get(itemId);
         if (updatedItem == null) {
             throw new ObjectNotFoundException("Item");
         }
@@ -63,19 +56,16 @@ public class ItemStorageImpl implements ItemStorage {
         if (itemDto.getAvailable() != null) {
             updatedItem.setAvailable(itemDto.getAvailable());
         }
-        userItems.put(updatedItem.getId(), updatedItem);
-        itemsMap.put(userId, userItems);
-        allItems.put(updatedItem.getId(), updatedItem);
         return updatedItem;
     }
 
     @Override
     public List<Item> searchItems(String text) {
-        List<Item> resultOfSearch = new ArrayList<>();
-        if (!text.isEmpty()) {
+        final List<Item> resultOfSearch = new ArrayList<>();
+        if (!text.isBlank()) {
             for (Item item : allItems.values()) {
-                if (item.getName().toLowerCase().contains(text.toLowerCase()) ||
-                        item.getDescription().toLowerCase().contains(text.toLowerCase())) {
+                if (item.getName().toLowerCase().contains(text) ||
+                        item.getDescription().toLowerCase().contains(text)) {
                     if (item.isAvailable()) {
                         resultOfSearch.add(item);
                     }
@@ -87,12 +77,7 @@ public class ItemStorageImpl implements ItemStorage {
 
     @Override
     public void deleteItem(Long userId, Long itemId) {
-        Map<Long, Item> userItems = itemsMap.get(userId);
-        if (userItems.get(itemId) == null) {
-            throw new ObjectNotFoundException("Item");
-        }
-        userItems.remove(itemId);
-        itemsMap.put(userId, userItems);
+        itemsMap.getOrDefault(userId, new HashMap<>()).remove(itemId);
         allItems.remove(itemId);
     }
 

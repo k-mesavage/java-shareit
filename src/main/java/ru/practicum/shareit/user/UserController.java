@@ -8,9 +8,9 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.validation.CreateConstraint;
 import ru.practicum.shareit.validation.UpdateConstraint;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +25,7 @@ public class UserController {
     private final UserMapper mapper;
 
     @PostMapping
-    public UserDto addUser(@RequestBody @Valid UserDto userDto) {
+    public UserDto addUser(@RequestBody @Validated(CreateConstraint.class) UserDto userDto) {
         log.info("Начало обработки запроса на добавление пользователя");
         User user = service.addUser(mapper.fromUserDto(userDto));
         log.info("Окончание обработки запроса на добавление пользователя");

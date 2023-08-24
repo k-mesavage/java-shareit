@@ -2,11 +2,12 @@ package ru.practicum.shareit.user.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.BadRequestException;
+import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -16,16 +17,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User addUser(User user) {
-        try {
-            return storage.addUser(user);
-        } catch (NullPointerException e) {
-            throw new BadRequestException("Bad Request Exception");
-        }
+        return storage.addUser(user);
     }
 
     @Override
     public User getUserById(Long id) {
-        return storage.getUserById(id);
+        return Optional.ofNullable(storage.getUserById(id))
+                .orElseThrow(() -> new ObjectNotFoundException("User"));
     }
 
     @Override
