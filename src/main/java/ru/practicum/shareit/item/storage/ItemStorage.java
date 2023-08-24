@@ -8,13 +8,13 @@ import java.util.List;
 
 public interface ItemStorage {
 
-    Item addItem(ItemDto item, User owner);
+    Item addItem(Item item, User owner);
 
     List<Item> getItemsByUserId(Long userId);
 
     Item getItemById(Long itemId);
 
-    Item updateItem(Long itemId, Long userId, String params);
+    Item updateItem(Long itemId, Long userId, ItemDto itemDto);
 
     List<Item> searchItems(String text);
 

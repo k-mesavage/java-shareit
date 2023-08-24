@@ -2,7 +2,6 @@ package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -20,20 +19,17 @@ public class ItemServiceImpl implements ItemService {
     private final UserStorage userStorage;
 
     @Override
-    public Item addItem(Long userId, ItemDto itemDto) {
-        if (!itemDto.isAvailable()) {
-            throw new BadRequestException("Available Exception");
+    public Item addItem(Long userId, Item item) {
+        User user = userStorage.getUserById(userId);
+        if(user == null) {
+            throw new ObjectNotFoundException("User");
         }
-        User owner = userStorage.getUserById(userId);
-        if (owner == null) {
-            throw new ObjectNotFoundException("User Not Found Exception");
-        }
-        return storage.addItem(itemDto, userStorage.getUserById(userId));
+        return storage.addItem(item, user);
     }
 
     @Override
-    public Item updateItem(Long itemId, Long userId, String params) {
-        return storage.updateItem(itemId, userId, params);
+    public Item updateItem(Long itemId, Long userId, ItemDto itemDto) {
+        return storage.updateItem(itemId, userId, itemDto);
     }
 
     @Override

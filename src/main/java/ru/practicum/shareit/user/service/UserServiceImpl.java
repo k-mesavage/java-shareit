@@ -2,7 +2,7 @@ package ru.practicum.shareit.user.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
@@ -15,8 +15,12 @@ public class UserServiceImpl implements UserService {
     private final UserStorage storage;
 
     @Override
-    public User addUser(UserDto user) {
-        return storage.addUser(user);
+    public User addUser(User user) {
+        try {
+            return storage.addUser(user);
+        } catch (NullPointerException e) {
+            throw new BadRequestException("Bad Request Exception");
+        }
     }
 
     @Override
@@ -30,8 +34,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(String params, Long userId) {
-        return storage.updateUser(params, userId);
+    public User updateUser(User user, Long userId) {
+        return storage.updateUser(user, userId);
     }
 
     @Override
