@@ -21,6 +21,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public ErrorResponse objectNotFound(final ObjectNotFoundException ex) {
+        log.info("Получен статус 404 Not Found {}", ex.getMessage(), ex);
         return new ErrorResponse(String.format("Object \"%s\" Not Found.", ex.getMessage()));
     }
 

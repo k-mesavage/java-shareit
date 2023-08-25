@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.storage;
 
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -10,11 +9,11 @@ import ru.practicum.shareit.user.model.User;
 import java.util.*;
 
 @Component
-@AllArgsConstructor
 public class ItemStorageImpl implements ItemStorage {
 
     private final Map<Long, Map<Long, Item>> itemsMap = new HashMap<>();
     private final Map<Long, Item> allItems = new HashMap<>();
+
     private static Long id = 0L;
 
     @Override
@@ -29,12 +28,12 @@ public class ItemStorageImpl implements ItemStorage {
 
     @Override
     public List<Item> getItemsByUserId(Long userId) {
-        return new ArrayList<>(itemsMap.getOrDefault(userId, new HashMap<>()).values());
+        return new ArrayList<>(itemsMap.getOrDefault(userId, Map.of()).values());
     }
 
     @Override
     public Item getItemById(Long itemId) {
-        return Optional.of(allItems.get(itemId)).orElseThrow(() -> new ObjectNotFoundException("Item"));
+        return Optional.ofNullable(allItems.get(itemId)).orElseThrow(() -> new ObjectNotFoundException("Item"));
     }
 
     @Override

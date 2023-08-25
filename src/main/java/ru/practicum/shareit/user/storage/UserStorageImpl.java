@@ -25,7 +25,7 @@ public class UserStorageImpl implements UserStorage {
 
     @Override
     public User getUserById(Long id) {
-        return users.get(id);
+        return Optional.ofNullable(users.get(id)).orElseThrow(() -> new ObjectNotFoundException("User"));
     }
 
     @Override
@@ -35,8 +35,7 @@ public class UserStorageImpl implements UserStorage {
 
     @Override
     public User updateUser(User user, Long userId) {
-        final User updatedUser = Optional.ofNullable(getUserById(userId))
-                .orElseThrow(() -> new ObjectNotFoundException("User"));
+        final User updatedUser = getUserById(userId);
         if (user.getName() != null && !user.getName().isBlank()) {
             updatedUser.setName(user.getName());
         }

@@ -6,6 +6,7 @@ import ru.practicum.shareit.validation.CreateConstraint;
 import ru.practicum.shareit.validation.UpdateConstraint;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 
 @Data
@@ -14,7 +15,7 @@ public class UserDto {
 
     private Long id;
 
-    @NotEmpty(groups = CreateConstraint.class)
+    @NotBlank(groups = CreateConstraint.class)
     private String name;
 
     @NotEmpty(groups = CreateConstraint.class)
