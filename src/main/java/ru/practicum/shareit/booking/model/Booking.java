@@ -32,7 +32,6 @@ public class Booking {
     private User booker;
 
     @Column(name = "status")
-    @Enumerated
     private String status;
 
     @Override

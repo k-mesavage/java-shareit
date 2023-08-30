@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -20,6 +21,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserStorage userStorage;
 
     @Override
+    @Transactional
     public Item addItem(Long userId, Item item) {
         User user = userStorage.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User Not Found"));
@@ -28,6 +30,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public Item updateItem(Long itemId, Long userId, ItemDto itemDto) {
         final List<Item> userItems = storage.findAllByOwnerId(userId);
         if (userItems == null) {
@@ -56,16 +59,19 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public Item getItemById(Long itemId) {
         return storage.getReferenceById(itemId);
     }
 
     @Override
+    @Transactional
     public List<Item> getAllItemsByUserId(Long userId) {
         return storage.findAllByOwnerId(userId);
     }
 
     @Override
+    @Transactional
     public void deleteItem(Long userId, Long itemId) {
         storage.deleteById(itemId);
     }
