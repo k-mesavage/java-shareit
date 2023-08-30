@@ -10,15 +10,15 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class ItemDto {
 
-    private Long id;
+    public Long id;
 
     @NotBlank(groups = CreateConstraint.class)
-    private String name;
+    public String name;
 
     @NotBlank(groups = CreateConstraint.class)
-    private String description;
+    public String description;
 
     @NotNull(groups = CreateConstraint.class)
-    private Boolean available;
+    public Boolean available;
 }
 

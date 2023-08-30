@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.params;
-enum StatusParam {
+enum Status {
     WAITING,
-    APPROVED
+    APPROVED,
+    REJECTED
 }

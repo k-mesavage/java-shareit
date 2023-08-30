@@ -2,12 +2,14 @@ package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -19,32 +21,57 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item addItem(Long userId, Item item) {
-        User user = userStorage.getUserById(userId);
-        return storage.addItem(item, user);
+        User user = userStorage.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User Not Found"));
+        item.setOwner(user);
+        return storage.save(item);
     }
 
     @Override
     public Item updateItem(Long itemId, Long userId, ItemDto itemDto) {
-        return storage.updateItem(itemId, userId, itemDto);
+        final List<Item> userItems = storage.findAllByOwnerId(userId);
+        if (userItems == null) {
+            throw new ObjectNotFoundException("Items");
+        }
+        Item updatedItem = null;
+        for (Item item : userItems) {
+            if (item.getId().equals(itemId)) {
+                updatedItem = item;
+            }
+        }
+        if (!updatedItem.getId().equals(itemDto.getId())) {
+            throw new ObjectNotFoundException("Item");
+        }
+        if (itemDto.getName() != null && !itemDto.getName().isBlank()) {
+            updatedItem.setName(itemDto.getName());
+        }
+        if (itemDto.getDescription() != null && !itemDto.getDescription().isBlank()) {
+            updatedItem.setDescription(itemDto.getDescription());
+        }
+        if (itemDto.getAvailable() != null) {
+            updatedItem.setAvailable(itemDto.getAvailable());
+        }
+        storage.updateById(updatedItem);
+        return updatedItem;
     }
 
     @Override
     public Item getItemById(Long itemId) {
-        return storage.getItemById(itemId);
+        return storage.getReferenceById(itemId);
     }
 
     @Override
     public List<Item> getAllItemsByUserId(Long userId) {
-        return storage.getItemsByUserId(userId);
+        return storage.findAllByOwnerId(userId);
     }
 
     @Override
     public void deleteItem(Long userId, Long itemId) {
-        storage.deleteItem(userId, itemId);
+        storage.deleteById(itemId);
     }
 
     @Override
     public List<Item> searchItems(String text) {
-        return storage.searchItems(text.toLowerCase());
+        return storage.searchAllByNameIn(Collections.singleton(text.toLowerCase()));
     }
 }
