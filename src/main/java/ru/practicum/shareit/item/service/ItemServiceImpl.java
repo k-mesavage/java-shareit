@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
@@ -10,7 +11,6 @@ import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -72,6 +72,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> searchItems(String text) {
-        return storage.searchByNameContainingIgnoreCase(text);
+        if (text.isBlank())
+            return List.of();
+        return storage.searchAvailableItems(text.toLowerCase());
     }
 }

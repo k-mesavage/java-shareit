@@ -6,8 +6,12 @@ import ru.practicum.shareit.user.model.User;
 import javax.persistence.*;
 import java.util.Objects;
 
-@Entity(name = "items")
-@Getter @Setter @ToString
+@Entity
+@Builder
+@Data
+@Table(name = "items")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Item {
 
     @Id
@@ -25,17 +29,7 @@ public class Item {
     private User owner;
 
     @Column(name = "is_available")
-    private boolean available;
-
-    public Item(Long id, String name, String description, boolean available) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.available = available;
-    }
-
-    public Item() {
-    }
+    private Boolean available;
 
     @Override
     public boolean equals(Object o) {
