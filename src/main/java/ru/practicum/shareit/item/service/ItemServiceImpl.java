@@ -72,6 +72,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> searchItems(String text) {
-        return storage.searchByNameLike(text.toLowerCase());
+        return storage.searchByNameContainingIgnoreCase(text);
     }
 }
