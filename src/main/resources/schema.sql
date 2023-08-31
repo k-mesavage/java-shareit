@@ -1,9 +1,19 @@
+DROP TABLE IF EXISTS users, items, bookings, requests, comments;
+
 CREATE TABLE IF NOT EXISTS
     users
 (
     id    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name  varchar(100),
-    email varchar(320)
+    email varchar(320),
+CONSTRAINT unique_email UNIQUE (email)
+);
+CREATE TABLE IF NOT EXISTS
+    requests
+(
+    id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    description  varchar(200),
+    requestor_id BIGINT REFERENCES users (id) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS
     items
@@ -24,13 +34,6 @@ CREATE TABLE IF NOT EXISTS
     item_id    BIGINT REFERENCES items (id) ON DELETE CASCADE,
     booker_id  BIGINT REFERENCES users (id) ON DELETE CASCADE,
     status     varchar(50)
-);
-CREATE TABLE IF NOT EXISTS
-    requests
-(
-    id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    description  varchar(200),
-    requestor_id BIGINT REFERENCES users (id) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS
     comments

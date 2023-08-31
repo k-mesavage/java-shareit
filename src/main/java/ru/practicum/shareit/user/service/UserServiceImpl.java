@@ -36,10 +36,13 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User updateUser(User user, Long userId) {
         User updatedUser = getUserById(userId);
-        if (updatedUser.getId().equals(user.getId())) {
-            storage.save(user);
+        if (user.getName() != null && !user.getName().isBlank()) {
+            updatedUser.setName(user.getName());
         }
-        return user;
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            updatedUser.setEmail(user.getEmail());
+        }
+        return updatedUser;
     }
 
     @Override

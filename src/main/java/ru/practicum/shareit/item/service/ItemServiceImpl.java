@@ -12,6 +12,7 @@ import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -24,7 +25,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     public Item addItem(Long userId, Item item) {
         User user = userStorage.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User Not Found"));
+                .orElseThrow(() -> new ObjectNotFoundException("User Not Found"));
         item.setOwner(user);
         return storage.save(item);
     }
@@ -32,30 +33,23 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public Item updateItem(Long itemId, Long userId, ItemDto itemDto) {
-        final List<Item> userItems = storage.findAllByOwnerId(userId);
-        if (userItems == null) {
-            throw new ObjectNotFoundException("Items");
-        }
-        Item updatedItem = null;
-        for (Item item : userItems) {
-            if (item.getId().equals(itemId)) {
-                updatedItem = item;
+        Item updatedItem = storage.getReferenceById(itemId);
+        if (Objects.equals(updatedItem.getOwner().getId(), userId)) {
+            if (updatedItem.getId().equals(itemId)) {
+                if (itemDto.getName() != null && !itemDto.getName().isBlank()) {
+                    updatedItem.setName(itemDto.getName());
+                }
+                if (itemDto.getDescription() != null && !itemDto.getDescription().isBlank()) {
+                    updatedItem.setDescription(itemDto.getDescription());
+                }
+                if (itemDto.getAvailable() != null) {
+                    updatedItem.setAvailable(itemDto.getAvailable());
+                }
+                storage.save(updatedItem);
+                return updatedItem;
             }
-        }
-        if (!updatedItem.getId().equals(itemDto.getId())) {
-            throw new ObjectNotFoundException("Item");
-        }
-        if (itemDto.getName() != null && !itemDto.getName().isBlank()) {
-            updatedItem.setName(itemDto.getName());
-        }
-        if (itemDto.getDescription() != null && !itemDto.getDescription().isBlank()) {
-            updatedItem.setDescription(itemDto.getDescription());
-        }
-        if (itemDto.getAvailable() != null) {
-            updatedItem.setAvailable(itemDto.getAvailable());
-        }
-        storage.updateById(updatedItem);
-        return updatedItem;
+        } else throw new ObjectNotFoundException("Updated Item");
+        return null;
     }
 
     @Override
@@ -78,6 +72,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> searchItems(String text) {
-        return storage.searchAllByNameIn(Collections.singleton(text.toLowerCase()));
+        return storage.searchByNameLike(text.toLowerCase());
     }
 }

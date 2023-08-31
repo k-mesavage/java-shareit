@@ -34,6 +34,9 @@ public class Item {
         this.available = available;
     }
 
+    public Item() {
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -9,11 +9,8 @@ import java.util.List;
 public interface ItemStorage extends JpaRepository<Item, Long> {
 
     Item findByOwnerId(Long userId);
+
     List<Item> findAllByOwnerId(Long userId);
 
-    default void updateById(Item updatedItem) {
-        save(updatedItem);
-    }
-
-    List<Item> searchAllByNameIn(Collection<String> name);
+    List<Item> searchByNameLike(String name);
 }
