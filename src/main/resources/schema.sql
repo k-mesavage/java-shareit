@@ -4,23 +4,23 @@ CREATE TABLE IF NOT EXISTS
     users
 (
     id    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name  varchar,
-    email varchar,
+    name  varchar(46),
+    email varchar(46),
 CONSTRAINT unique_email UNIQUE (email)
 );
 CREATE TABLE IF NOT EXISTS
     requests
 (
     id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    description  varchar,
+    description  varchar(200),
     requestor_id BIGINT REFERENCES users (id) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS
     items
 (
     id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name         varchar,
-    description  varchar,
+    name         varchar(46),
+    description  varchar(200),
     is_available boolean,
     owner_id     BIGINT REFERENCES users (id) ON DELETE CASCADE,
     request_id   int REFERENCES requests (id) ON DELETE CASCADE
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS
     end_date   TIMESTAMP WITHOUT TIME ZONE,
     item_id    BIGINT REFERENCES items (id) ON DELETE CASCADE,
     booker_id  BIGINT REFERENCES users (id) ON DELETE CASCADE,
-    status     varchar(50)
+    status     varchar(12)
 );
 CREATE TABLE IF NOT EXISTS
     comments

@@ -45,9 +45,11 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> searchItems(@RequestParam String text) {
         log.info("Начало обработки запроса на поиск с параметром {}", text);
-        List<Item> resultOfSearch = service.searchItems(text);
+        List<ItemDto> resultOfSearch = service.searchItems(text).stream()
+                .map(mapper::toItemDto)
+                .collect(Collectors.toList());
         log.info("Окончание обработки запроса на поиск с параметром {}", text);
-        return resultOfSearch.stream().map(mapper::toItemDto).collect(Collectors.toList());
+        return resultOfSearch;
     }
 
     @PostMapping
