@@ -1,7 +1,6 @@
 package ru.practicum.shareit.exception;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -26,6 +25,13 @@ public class ControllerExceptionHandler {
     public ErrorResponse objectNotFound(RuntimeException ex) {
         log.info("Получен статус 404 Not Found {}", ex.getMessage(), ex);
         return new ErrorResponse(String.format("\"%s\". Status 404", ex.getMessage()));
+    }
+
+    @ExceptionHandler({UnsupportedStatusException.class})
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse unsupportedStatus(RuntimeException ex) {
+        log.info("Получен статус 500 {}", ex.getMessage(), ex);
+        return new ErrorResponse("Unknown state: " + ex.getMessage());
     }
 
     @ExceptionHandler

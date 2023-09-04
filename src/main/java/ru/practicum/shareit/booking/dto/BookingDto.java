@@ -2,8 +2,8 @@ package ru.practicum.shareit.booking.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.shareit.item.dto.BookingItem;
-import ru.practicum.shareit.user.dto.BookingUser;
+import ru.practicum.shareit.item.dto.ShortBookingItem;
+import ru.practicum.shareit.user.dto.ShortUserDto;
 import ru.practicum.shareit.validation.CreateConstraint;
 
 import javax.validation.constraints.NotBlank;
@@ -23,7 +23,7 @@ public class BookingDto {
 
     public String status;
 
-    public BookingUser booker;
+    public ShortUserDto booker;
 
-    public BookingItem item;
+    public ShortBookingItem item;
 }

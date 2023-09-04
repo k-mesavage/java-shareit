@@ -12,6 +12,7 @@ import ru.practicum.shareit.validation.CreateConstraint;
 import ru.practicum.shareit.validation.UpdateConstraint;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j

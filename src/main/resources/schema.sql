@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS
 CREATE TABLE IF NOT EXISTS
     comments
 (
-    id        BIGINT,
+    id        BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     text      varchar(2000),
     item_id   BIGINT REFERENCES items (id) ON DELETE CASCADE,
     author_id BIGINT REFERENCES users (id) ON DELETE CASCADE
