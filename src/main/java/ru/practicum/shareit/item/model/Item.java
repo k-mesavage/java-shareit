@@ -6,9 +6,9 @@ import ru.practicum.shareit.user.model.User;
 import javax.persistence.*;
 import java.util.Objects;
 
+@Data
 @Entity
 @Builder
-@Data
 @Table(name = "items")
 @AllArgsConstructor
 @NoArgsConstructor

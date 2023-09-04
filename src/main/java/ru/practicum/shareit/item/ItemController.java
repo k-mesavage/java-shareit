@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.validation.CreateConstraint;
@@ -71,5 +72,14 @@ public class ItemController {
         log.info("Начало обработки запроса на удаление вещи {}", itemId);
         service.deleteItem(userId, itemId);
         log.info("Окончание обработки запроса на удаление вещи {}", itemId);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@RequestHeader(X_SHARER_USER_ID) Long userId,
+                                  @PathVariable Long itemId,
+                                  @RequestBody CommentDto commentDto) {
+
+        log.info("User {} add comment for Item {}", userId, itemId);
+        return service.addComment(userId, itemId, commentDto);
     }
 }

@@ -9,7 +9,6 @@ import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.params.BookingState;
 import ru.practicum.shareit.booking.storage.BookingStorage;
-import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
@@ -68,13 +67,13 @@ public class BookingServiceImpl implements BookingService {
         User owner = userStorage.getReferenceById(item.getOwner().getId());
         objectChecker.userAccess(userId, owner.getId());
         if (approved) {
-            if (!booking.getStatus().equals(APPROVED.toString())) {
-                booking.setStatus(APPROVED.toString());
-            } else throw new BadRequestException("ReApproved Exception");
+            objectChecker.reApprove(booking);
+            booking.setStatus(APPROVED.toString());
         } else {
             booking.setStatus(REJECTED.toString());
         }
         bookingStorage.save(booking);
+
         return bookingMapper.toDto(booking);
     }
 

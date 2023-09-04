@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import static ru.practicum.shareit.booking.params.BookingState.APPROVED;
+
 @Service
 @RequiredArgsConstructor
 public class ObjectChecker {
@@ -36,7 +38,11 @@ public class ObjectChecker {
         }
     }
 
-
+    public void reApprove(Booking booking) {
+        if (booking.getStatus().equals(APPROVED.toString())) {
+            throw new BadRequestException("ReApproved Exception");
+        }
+    }
 
     public void bookerAccess(Long ownerId, Long bookerId) {
         if (ownerId.equals(bookerId)) {
@@ -78,6 +84,15 @@ public class ObjectChecker {
                 workingBookingDto.getEnd().isBefore(workingBookingDto.getStart()) ||
                 workingBookingDto.getEnd().equals(workingBookingDto.getStart())) {
             throw new BadRequestException("Check Date Exception");
+        }
+    }
+
+    public void bookingFound(Long userId, Long itemId) {
+        if (bookingStorage.findFirstByItemIdAndBookerIdAndStatusAndEndBefore(itemId,
+                userId,
+                "APPROVED",
+                LocalDateTime.now()) == null) {
+            throw new ObjectNotFoundException("Booking Found Exception");
         }
     }
 }
