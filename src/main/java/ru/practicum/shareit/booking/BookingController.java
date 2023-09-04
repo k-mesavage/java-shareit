@@ -3,7 +3,7 @@ package ru.practicum.shareit.booking;
 import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.booking.dto.ShortBookingDto;
+import ru.practicum.shareit.booking.dto.WorkingBookingDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.validation.CreateConstraint;
@@ -23,8 +23,8 @@ public class BookingController {
     @PostMapping
     public BookingDto addBooking(@RequestHeader(X_SHARER_USER_ID) Long userId,
                                  @RequestBody
-                                 @Validated(CreateConstraint.class) ShortBookingDto shortBookingDto) {
-        BookingDto newBooking = service.addBooking(userId, shortBookingDto);
+                                 @Validated(CreateConstraint.class) WorkingBookingDto workingBookingDto) {
+        BookingDto newBooking = service.addBooking(userId, workingBookingDto);
         return newBooking;
     }
 

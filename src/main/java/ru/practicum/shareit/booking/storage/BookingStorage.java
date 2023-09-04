@@ -3,7 +3,6 @@ package ru.practicum.shareit.booking.storage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.params.BookingState;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -56,4 +55,8 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
             "left join Item i on (b.itemId = i.id) " +
             "where i.owner.id = (?1) and b.status like (?2) order by b.start desc")
     List<Booking> findAllByItemOwnerIdAndStatusOrderByStartDesc(Long userId, String status);
+
+    Booking findFirstByItemIdAndStartBeforeOrderByStartDesc(Long itemId, LocalDateTime dateTime);
+
+    Booking findFirstByItemIdAndStartAfterOrderByStartAsc(Long itemId, LocalDateTime dateTime);
 }

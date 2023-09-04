@@ -2,23 +2,13 @@ package ru.practicum.shareit.booking.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.data.annotation.CreatedDate;
-import ru.practicum.shareit.validation.CreateConstraint;
-
-import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 @Data
 @Builder
 public class ShortBookingDto {
 
-    @NotNull(groups = CreateConstraint.class)
-    @CreatedDate
-    public LocalDateTime start;
+    Long id;
 
-    @NotNull(groups = CreateConstraint.class)
-    public LocalDateTime end;
+    Long bookerId;
 
-    @NotNull(groups = CreateConstraint.class)
-    public Long itemId;
 }

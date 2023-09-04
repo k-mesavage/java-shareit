@@ -2,14 +2,12 @@ package ru.practicum.shareit.booking.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.ShortBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.item.dto.ShortBookingItem;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
-import ru.practicum.shareit.user.dto.ShortUserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
@@ -49,12 +47,18 @@ public class BookingMapper {
                 .build();
     }
 
-    @Transactional
     public List<BookingDto> fromListToDtoList(List<Booking> bookings) {
         List<BookingDto> dtoBookings = new ArrayList<>();
         for (Booking booking : bookings) {
             dtoBookings.add(toDto(booking));
         }
         return dtoBookings;
+    }
+
+    public ShortBookingDto toShortBookingDto(Booking booking) {
+        return ShortBookingDto.builder()
+                .id(booking.getId())
+                .bookerId(booking.getBookerId())
+                .build();
     }
 }

@@ -2,7 +2,7 @@ package ru.practicum.shareit.utility;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.dto.ShortBookingDto;
+import ru.practicum.shareit.booking.dto.WorkingBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.storage.BookingStorage;
 import ru.practicum.shareit.exception.BadRequestException;
@@ -12,6 +12,7 @@ import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -23,19 +24,27 @@ public class ObjectChecker {
 
     private final ItemStorage itemStorage;
 
-    public void user(Long userId) {
+    public void userFound(Long userId) {
         if (!userStorage.existsById(userId)) {
             throw new ObjectNotFoundException("User Not Found");
         }
     }
 
-    public void booker(Long ownerId, Long bookerId) {
+    public void userAccess(Long userId, Long ownerId) {
+        if (!Objects.equals(userId, ownerId)) {
+            throw new ObjectNotFoundException("User Access Exception");
+        }
+    }
+
+
+
+    public void bookerAccess(Long ownerId, Long bookerId) {
         if (ownerId.equals(bookerId)) {
             throw new ObjectNotFoundException("Owner Book Exception");
         }
     }
 
-    public void item(Long itemId) {
+    public void itemFound(Long itemId) {
         if (!itemStorage.existsById(itemId)) {
             throw new ObjectNotFoundException("Item Not Found");
         }
@@ -47,27 +56,27 @@ public class ObjectChecker {
         }
     }
 
-    public void checkBookingDate(ShortBookingDto shortBookingDto, Long itemId) {
+    public void checkBookingDate(WorkingBookingDto workingBookingDto, Long itemId) {
         List<Booking> checkingBookings = bookingStorage.findAllByItemId(itemId);
         for (Booking booking : checkingBookings) {
-            if (shortBookingDto.getStart().isBefore(booking.getEnd()) &&
-                    booking.getStart().isBefore(shortBookingDto.getEnd())) {
+            if (workingBookingDto.getStart().isBefore(booking.getEnd()) &&
+                    booking.getStart().isBefore(workingBookingDto.getEnd())) {
                 throw new BadRequestException("Available Item Exception");
             }
-            if (shortBookingDto.getStart().equals(shortBookingDto.getEnd())) {
+            if (workingBookingDto.getStart().equals(workingBookingDto.getEnd())) {
                 throw new BadRequestException("Available Item Exception");
             }
-            if (shortBookingDto.getEnd().isBefore(shortBookingDto.getStart())) {
+            if (workingBookingDto.getEnd().isBefore(workingBookingDto.getStart())) {
                 throw new BadRequestException("Available Item Exception");
             }
         }
     }
 
-    public void checkDateTime(ShortBookingDto shortBookingDto) {
-        if (shortBookingDto.getStart().isBefore(LocalDateTime.now()) ||
-                shortBookingDto.getEnd().isBefore(LocalDateTime.now()) ||
-                shortBookingDto.getEnd().isBefore(shortBookingDto.getStart()) ||
-                shortBookingDto.getEnd().equals(shortBookingDto.getStart())) {
+    public void checkDateTime(WorkingBookingDto workingBookingDto) {
+        if (workingBookingDto.getStart().isBefore(LocalDateTime.now()) ||
+                workingBookingDto.getEnd().isBefore(LocalDateTime.now()) ||
+                workingBookingDto.getEnd().isBefore(workingBookingDto.getStart()) ||
+                workingBookingDto.getEnd().equals(workingBookingDto.getStart())) {
             throw new BadRequestException("Check Date Exception");
         }
     }

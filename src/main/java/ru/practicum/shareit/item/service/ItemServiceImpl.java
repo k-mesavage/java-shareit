@@ -3,15 +3,19 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exception.ObjectNotFoundException;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.storage.BookingStorage;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.utility.ObjectChecker;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -19,49 +23,67 @@ import java.util.Objects;
 public class ItemServiceImpl implements ItemService {
 
     private final ItemStorage storage;
+
     private final UserStorage userStorage;
 
+    private final BookingStorage bookingStorage;
+
+    private final BookingMapper bookingMapper;
+
+    private final ItemMapper itemMapper;
+
+    private final ObjectChecker objectChecker;
+
     @Override
     @Transactional
-    public Item addItem(Long userId, Item item) {
-        User user = userStorage.findById(userId)
-                .orElseThrow(() -> new ObjectNotFoundException("User Not Found"));
-        item.setOwner(user);
-        return storage.save(item);
+    public ItemDto addItem(Long userId, ItemDto itemDto) {
+        objectChecker.userFound(userId);
+        Item newItem = itemMapper.fromItemDto(itemDto);
+        newItem.setOwner(userStorage.findById(userId).get());
+        return itemMapper.toItemDto(storage.save(newItem));
     }
 
     @Override
     @Transactional
-    public Item updateItem(Long itemId, Long userId, ItemDto itemDto) {
+    public ItemDto updateItem(Long itemId, Long userId, ItemDto itemDto) {
         Item updatedItem = storage.getReferenceById(itemId);
-        if (Objects.equals(updatedItem.getOwner().getId(), userId)) {
-            if (updatedItem.getId().equals(itemId)) {
-                if (itemDto.getName() != null && !itemDto.getName().isBlank()) {
-                    updatedItem.setName(itemDto.getName());
-                }
-                if (itemDto.getDescription() != null && !itemDto.getDescription().isBlank()) {
-                    updatedItem.setDescription(itemDto.getDescription());
-                }
-                if (itemDto.getAvailable() != null) {
-                    updatedItem.setAvailable(itemDto.getAvailable());
-                }
-                storage.save(updatedItem);
-                return updatedItem;
-            }
-        } else throw new ObjectNotFoundException("Updated Item");
-        return null;
+        objectChecker.userAccess(updatedItem.getOwner().getId(), userId);
+        if (itemDto.getName() != null && !itemDto.getName().isBlank()) {
+            updatedItem.setName(itemDto.getName());
+        }
+        if (itemDto.getDescription() != null && !itemDto.getDescription().isBlank()) {
+            updatedItem.setDescription(itemDto.getDescription());
+        }
+        if (itemDto.getAvailable() != null) {
+            updatedItem.setAvailable(itemDto.getAvailable());
+        }
+        storage.save(updatedItem);
+        return itemMapper.toItemDto(updatedItem);
     }
 
     @Override
     @Transactional
-    public Item getItemById(Long itemId) {
-        return storage.getReferenceById(itemId);
+    public ItemDto getItemById(Long itemId) {
+        ItemDto itemDto = itemMapper.toItemDto(storage.getReferenceById(itemId));
+        Booking lastBooking = bookingStorage
+                .findFirstByItemIdAndStartBeforeOrderByStartDesc(itemId, LocalDateTime.now());
+        Booking nextBooking = bookingStorage
+                .findFirstByItemIdAndStartAfterOrderByStartAsc(itemId, LocalDateTime.now());
+        if (lastBooking != null) {
+            itemDto.lastBooking = bookingMapper.toShortBookingDto(lastBooking);
+        }
+        if (nextBooking != null) {
+            itemDto.nextBooking = bookingMapper.toShortBookingDto(nextBooking);
+        }
+        return itemDto;
     }
 
     @Override
     @Transactional
-    public List<Item> getAllItemsByUserId(Long userId) {
-        return storage.findAllByOwnerId(userId);
+    public List<ItemDto> getAllItemsByUserId(Long userId) {
+        return storage.findAllByOwnerId(userId).stream()
+                .map(itemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -71,10 +93,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> searchItems(String text) {
+    public List<ItemDto> searchItems(String text) {
         if (text.isBlank()) {
             return List.of();
         }
-        return storage.searchAvailableItems(text.toLowerCase());
+        return storage.searchAvailableItems(text.toLowerCase()).stream()
+                .map(itemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 }

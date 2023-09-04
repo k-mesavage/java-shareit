@@ -10,7 +10,7 @@ import javax.persistence.Table;
 @Data
 @Entity
 @Table(name = "items")
-public class ShortBookingItem {
+public class ShortItemDto {
 
     @Id
     public Long id;
@@ -18,10 +18,10 @@ public class ShortBookingItem {
     @Column(name = "name")
     public String name;
 
-    public ShortBookingItem() {
+    public ShortItemDto() {
     }
 
-    public ShortBookingItem(Long id, String name) {
+    public ShortItemDto(Long id, String name) {
         this.id = id;
         this.name = name;
     }

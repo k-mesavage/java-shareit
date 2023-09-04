@@ -3,7 +3,7 @@ package ru.practicum.shareit.booking.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.dto.ShortBookingDto;
+import ru.practicum.shareit.booking.dto.WorkingBookingDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
@@ -20,7 +20,6 @@ import ru.practicum.shareit.utility.ObjectChecker;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static ru.practicum.shareit.booking.params.BookingState.*;
 
@@ -41,23 +40,23 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingDto addBooking(Long bookerId, ShortBookingDto shortBookingDto) {
-        objectChecker.checkDateTime(shortBookingDto);
-        objectChecker.item(shortBookingDto.getItemId());
-        objectChecker.user(bookerId);
-        Item item = itemStorage.getReferenceById(shortBookingDto.getItemId());
+    public BookingDto addBooking(Long bookerId, WorkingBookingDto workingBookingDto) {
+        objectChecker.checkDateTime(workingBookingDto);
+        objectChecker.itemFound(workingBookingDto.getItemId());
+        objectChecker.userFound(bookerId);
+        Item item = itemStorage.getReferenceById(workingBookingDto.getItemId());
         objectChecker.itemAvailable(item.getId());
-        objectChecker.checkBookingDate(shortBookingDto, item.getId());
-        objectChecker.booker(item.getOwner().getId(), bookerId);
+        objectChecker.checkBookingDate(workingBookingDto, item.getId());
+        objectChecker.bookerAccess(item.getOwner().getId(), bookerId);
         Booking newBooking = Booking.builder()
-                        .start(shortBookingDto.getStart())
-                        .end(shortBookingDto.getEnd())
-                        .status(BookingState.WAITING.toString())
-                        .itemId(shortBookingDto.getItemId())
-                        .bookerId(bookerId)
-                        .build();
-                newBooking = bookingStorage.save(newBooking);
-            return bookingMapper.toDto(newBooking);
+                .start(workingBookingDto.getStart())
+                .end(workingBookingDto.getEnd())
+                .status(BookingState.WAITING.toString())
+                .itemId(workingBookingDto.getItemId())
+                .bookerId(bookerId)
+                .build();
+        newBooking = bookingStorage.save(newBooking);
+        return bookingMapper.toDto(newBooking);
 
 
     }
@@ -67,25 +66,24 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingStorage.getReferenceById(bookingId);
         Item item = itemStorage.getReferenceById(booking.getItemId());
         User owner = userStorage.getReferenceById(item.getOwner().getId());
-        if (Objects.equals(userId, owner.getId())) {
-            if (approved) {
-                if (!booking.getStatus().equals(APPROVED.toString())) {
-                    booking.setStatus(APPROVED.toString());
-                } else throw new BadRequestException("Approved Exception");
-            } else {
-                booking.setStatus(REJECTED.toString());
-            }
-            bookingStorage.save(booking);
-            return bookingMapper.toDto(booking);
-        } else throw new ObjectNotFoundException("Request Booking Exception");
+        objectChecker.userAccess(userId, owner.getId());
+        if (approved) {
+            if (!booking.getStatus().equals(APPROVED.toString())) {
+                booking.setStatus(APPROVED.toString());
+            } else throw new BadRequestException("ReApproved Exception");
+        } else {
+            booking.setStatus(REJECTED.toString());
+        }
+        bookingStorage.save(booking);
+        return bookingMapper.toDto(booking);
     }
 
     @Override
     public List<BookingDto> getAllBookingsByUser(Long bookerId, String state) {
-        objectChecker.user(bookerId);
+        objectChecker.userFound(bookerId);
         BookingState status = BookingState.getValue(state);
         List<Booking> bookings = new ArrayList<>();
-        if (status.equals(CURRENT)){
+        if (status.equals(CURRENT)) {
             bookings = bookingStorage.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartAsc(bookerId, LocalDateTime.now());
         }
         if (status.equals(ALL)) {
@@ -107,10 +105,10 @@ public class BookingServiceImpl implements BookingService {
     }
 
     public List<BookingDto> getAllItemsBookingByOwner(Long userId, String state) {
-        objectChecker.user(userId);
+        objectChecker.userFound(userId);
         List<Booking> bookings = new ArrayList<>();
         BookingState status = BookingState.getValue(state);
-        if (status.equals(CURRENT)){
+        if (status.equals(CURRENT)) {
             bookings = bookingStorage.
                     findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartAsc(userId, LocalDateTime.now());
         }
@@ -136,10 +134,12 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto getBookingById(Long bookingId, Long userId) {
         Booking booking = bookingStorage.getReferenceById(bookingId);
         Item item = itemStorage.getReferenceById(booking.getItemId());
-        if (booking.getBookerId().equals(userId) || item.getOwner().getId().equals(userId)) {
-            return bookingMapper.toDto(booking);
+        try {
+            objectChecker.userAccess(booking.getBookerId(), userId);
+        } catch (ObjectNotFoundException e) {
+            objectChecker.userAccess(item.getOwner().getId(), userId);
         }
-        throw new ObjectNotFoundException("Get Booking Exception");
+        return bookingMapper.toDto(booking);
     }
 }
 
