@@ -14,6 +14,7 @@ import ru.practicum.shareit.user.storage.UserStorage;
 import ru.practicum.shareit.utility.ObjectChecker;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,26 +64,22 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public ItemDto getItemById(Long itemId) {
-        ItemDto itemDto = itemMapper.toItemDto(storage.getReferenceById(itemId));
-        Booking lastBooking = bookingStorage
-                .findFirstByItemIdAndStartBeforeOrderByStartDesc(itemId, LocalDateTime.now());
-        Booking nextBooking = bookingStorage
-                .findFirstByItemIdAndStartAfterOrderByStartAsc(itemId, LocalDateTime.now());
-        if (lastBooking != null) {
-            itemDto.lastBooking = bookingMapper.toShortBookingDto(lastBooking);
+    public ItemDto getItemById(Long userId, Long itemId) {
+        Item item = storage.getReferenceById(itemId);
+        if (item.getOwner().getId().equals(userId)) {
+            return addShortBooking(itemMapper.toItemDto(item));
         }
-        if (nextBooking != null) {
-            itemDto.nextBooking = bookingMapper.toShortBookingDto(nextBooking);
-        }
-        return itemDto;
+        return itemMapper.toItemDto(item);
     }
 
     @Override
     @Transactional
     public List<ItemDto> getAllItemsByUserId(Long userId) {
-        return storage.findAllByOwnerId(userId).stream()
+        return storage.findAllByOwnerId(userId)
+                .stream()
                 .map(itemMapper::toItemDto)
+                .map(this::addShortBooking)
+                .sorted(Comparator.comparing(ItemDto::getId))
                 .collect(Collectors.toList());
     }
 
@@ -100,5 +97,23 @@ public class ItemServiceImpl implements ItemService {
         return storage.searchAvailableItems(text.toLowerCase()).stream()
                 .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());
+    }
+
+    private ItemDto addShortBooking(ItemDto itemDto) {
+        Booking lastBooking = bookingStorage
+                .findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(itemDto.getId(),
+                        LocalDateTime.now(),
+                        "APPROVED");
+        Booking nextBooking = bookingStorage
+                .findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(itemDto.getId(),
+                        LocalDateTime.now(),
+                        "APPROVED");
+        if (lastBooking != null) {
+            itemDto.lastBooking = bookingMapper.toShortBookingDto(lastBooking);
+        }
+        if (nextBooking != null) {
+            itemDto.nextBooking = bookingMapper.toShortBookingDto(nextBooking);
+        }
+        return itemDto;
     }
 }

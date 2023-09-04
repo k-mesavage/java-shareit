@@ -22,9 +22,10 @@ public class ItemController {
     private final ItemService service;
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemInformation(@PathVariable Long itemId) {
+    public ItemDto getItemInformation(@RequestHeader(X_SHARER_USER_ID) Long userId,
+                                      @PathVariable Long itemId) {
         log.info("Начало обработки запроса на получение информации о вещи {}", itemId);
-        ItemDto item = service.getItemById(itemId);
+        ItemDto item = service.getItemById(userId, itemId);
         log.info("Окончание обработки запроса на получение информации о вещи {}", itemId);
         return item;
         }
