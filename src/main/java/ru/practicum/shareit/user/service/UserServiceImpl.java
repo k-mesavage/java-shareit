@@ -3,10 +3,12 @@ package ru.practicum.shareit.user.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -14,28 +16,30 @@ public class UserServiceImpl implements UserService {
 
     private final UserStorage storage;
 
+    private final UserMapper userMapper;
+
     @Override
     @Transactional
-    public User addUser(User user) {
-        return storage.save(user);
+    public UserDto addUser(UserDto user) {
+        return userMapper.toUserDto(storage.save(userMapper.fromUserDto(user)));
     }
 
     @Override
     @Transactional
-    public User getUserById(Long id) {
-        return storage.getReferenceById(id);
+    public UserDto getUserById(Long id) {
+        return userMapper.toUserDto(storage.getReferenceById(id));
     }
 
     @Override
     @Transactional
-    public List<User> getAllUsers() {
-        return storage.findAll();
+    public List<UserDto> getAllUsers() {
+        return storage.findAll().stream().map(userMapper::toUserDto).collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public User updateUser(User user, Long userId) {
-        User updatedUser = getUserById(userId);
+    public UserDto updateUser(UserDto user, Long userId) {
+        UserDto updatedUser = getUserById(userId);
         if (user.getName() != null && !user.getName().isBlank()) {
             updatedUser.setName(user.getName());
         }

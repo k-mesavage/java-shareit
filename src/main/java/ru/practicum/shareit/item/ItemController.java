@@ -28,7 +28,7 @@ public class ItemController {
         ItemDto item = service.getItemById(userId, itemId);
         log.info("Окончание обработки запроса на получение информации о вещи {}", itemId);
         return item;
-        }
+    }
 
     @GetMapping
     public List<ItemDto> getOwnerItems(@RequestHeader(X_SHARER_USER_ID) Long userId) {
