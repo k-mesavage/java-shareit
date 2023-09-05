@@ -16,12 +16,12 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
     List<Booking> findAllByBookerIdOrderByStartDesc(Long booker_id);
 
     @Query("select b from Booking b " +
-            "where b.bookerId = (?1) and b.end > (?2) order by b.start desc")
+            "where b.bookerId = (?1) and b.end < (?2) order by b.start desc")
     List<Booking> findAllByBookerIdAndEndBeforeOrderByStartDesc(Long userId, LocalDateTime dateTime);
 
-    @Query("select b from Booking b " +
-            "where b.bookerId = (?1) and (b.start > (?2) and b.end < (?2)) order by b.start asc")
-    List<Booking> findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartAsc(Long userId, LocalDateTime dateTime);
+    List<Booking> findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(Long userId,
+                                                                            LocalDateTime start,
+                                                                            LocalDateTime end);
 
     @Query("select b from Booking b " +
             "where b.bookerId = (?1) and b.start > (?2) order by b.start desc ")
@@ -38,13 +38,15 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
 
     @Query("select b from Booking b " +
             "left join Item i on (b.itemId = i.id) " +
-            "where i.owner.id = (?1) and b.end > (?2) order by b.start desc")
+            "where i.owner.id = (?1) and b.end < (?2) order by b.start desc")
     List<Booking> findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(Long userId, LocalDateTime dateTime);
 
     @Query("select b from Booking b " +
             "left join Item i on (b.itemId = i.id) " +
-            "where i.owner.id = (?1) and (b.start > (?2) and b.end < (?2)) order by b.start asc")
-    List<Booking> findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartAsc(Long userId, LocalDateTime dateTime);
+            "where i.owner.id = (?1) and (b.start < (?2) and b.end > (?3)) order by b.start asc")
+    List<Booking> findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(Long ownerId,
+                                                                                LocalDateTime start,
+                                                                                LocalDateTime end);
 
     @Query("select b from Booking b " +
             "left join Item i on (b.itemId = i.id) " +

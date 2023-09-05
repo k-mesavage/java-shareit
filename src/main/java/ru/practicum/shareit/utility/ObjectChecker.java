@@ -92,7 +92,7 @@ public class ObjectChecker {
                 userId,
                 "APPROVED",
                 LocalDateTime.now()) == null) {
-            throw new ObjectNotFoundException("Booking Found Exception");
+            throw new BadRequestException("Booking Found Exception");
         }
     }
 }

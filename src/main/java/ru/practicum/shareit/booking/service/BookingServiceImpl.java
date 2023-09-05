@@ -83,7 +83,9 @@ public class BookingServiceImpl implements BookingService {
         BookingState status = BookingState.getValue(state);
         List<Booking> bookings = new ArrayList<>();
         if (status.equals(CURRENT)) {
-            bookings = bookingStorage.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartAsc(bookerId, LocalDateTime.now());
+            bookings = bookingStorage.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(bookerId,
+                    LocalDateTime.now(),
+                    LocalDateTime.now());
         }
         if (status.equals(ALL)) {
             bookings = bookingStorage.findAllByBookerIdOrderByStartDesc(bookerId);
@@ -103,28 +105,30 @@ public class BookingServiceImpl implements BookingService {
         return bookingMapper.fromListToDtoList(bookings);
     }
 
-    public List<BookingDto> getAllItemsBookingByOwner(Long userId, String state) {
-        objectChecker.userFound(userId);
+    public List<BookingDto> getAllItemsBookingByOwner(Long ownerId, String state) {
+        objectChecker.userFound(ownerId);
         List<Booking> bookings = new ArrayList<>();
         BookingState status = BookingState.getValue(state);
         if (status.equals(CURRENT)) {
             bookings = bookingStorage.
-                    findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartAsc(userId, LocalDateTime.now());
+                    findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(ownerId,
+                            LocalDateTime.now(),
+                            LocalDateTime.now());
         }
         if (status.equals(ALL)) {
-            bookings = bookingStorage.findAllByItemOwnerIdOrderByStartDesc(userId);
+            bookings = bookingStorage.findAllByItemOwnerIdOrderByStartDesc(ownerId);
         }
         if (status.equals(PAST)) {
-            bookings = bookingStorage.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now());
+            bookings = bookingStorage.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(ownerId, LocalDateTime.now());
         }
         if (status.equals(FUTURE)) {
-            bookings = bookingStorage.findAllByItemOwnerIdAndStatusFuture(userId, LocalDateTime.now());
+            bookings = bookingStorage.findAllByItemOwnerIdAndStatusFuture(ownerId, LocalDateTime.now());
         }
         if (status.equals(WAITING)) {
-            bookings = bookingStorage.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, state);
+            bookings = bookingStorage.findAllByItemOwnerIdAndStatusOrderByStartDesc(ownerId, state);
         }
         if (status.equals(REJECTED)) {
-            bookings = bookingStorage.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, state);
+            bookings = bookingStorage.findAllByItemOwnerIdAndStatusOrderByStartDesc(ownerId, state);
         }
         return bookingMapper.fromListToDtoList(bookings);
     }

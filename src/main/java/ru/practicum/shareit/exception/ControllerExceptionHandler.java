@@ -8,12 +8,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.persistence.EntityNotFoundException;
+import javax.validation.UnexpectedTypeException;
 
 @Slf4j
 @RestControllerAdvice
 public class ControllerExceptionHandler {
 
-    @ExceptionHandler({BadRequestException.class, MethodArgumentNotValidException.class})
+    @ExceptionHandler({BadRequestException.class, MethodArgumentNotValidException.class, UnexpectedTypeException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse badRequest(RuntimeException ex) {
         log.info("Получен статус 400 Bad Request {}", ex.getMessage(), ex);

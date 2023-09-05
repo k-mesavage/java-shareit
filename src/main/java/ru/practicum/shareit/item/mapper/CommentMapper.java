@@ -7,6 +7,7 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,21 +17,21 @@ import java.util.Optional;
 public class CommentMapper {
 
     public CommentDto toCommentDto(Comment comment) {
-        CommentDto commentDto = CommentDto.builder()
+        return CommentDto.builder()
                 .id(comment.getId())
-                .description(comment.getDescription())
+                .text(comment.getText())
                 .authorName(comment.getAuthor().getName())
+                .created(comment.getCreated())
                 .build();
-        return commentDto;
     }
 
-    public Comment toComment(CommentDto commentDto, Item item, User user) {
-        Comment comment = Comment.builder()
-                .description(commentDto.getDescription())
+    public Comment toComment(CommentDto commentDto, Item item, User user, LocalDateTime created) {
+        return Comment.builder()
+                .text(commentDto.getText())
                 .item(item)
                 .author(user)
+                .created(created)
                 .build();
-        return comment;
     }
 
     public Optional<List<CommentDto>> DtoList(Iterable<Comment> comments) {
