@@ -56,8 +56,6 @@ public class BookingServiceImpl implements BookingService {
                 .build();
         newBooking = bookingStorage.save(newBooking);
         return bookingMapper.toDto(newBooking);
-
-
     }
 
     @Override
@@ -110,8 +108,8 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookings = new ArrayList<>();
         BookingState status = BookingState.getValue(state);
         if (status.equals(CURRENT)) {
-            bookings = bookingStorage.
-                    findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(ownerId,
+            bookings = bookingStorage
+                    .findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(ownerId,
                             LocalDateTime.now(),
                             LocalDateTime.now());
         }

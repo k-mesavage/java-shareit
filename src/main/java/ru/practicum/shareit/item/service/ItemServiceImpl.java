@@ -125,7 +125,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private ItemDto setItemComments(ItemDto itemDto) {
-        itemDto.setComments(commentMapper.DtoList(commentStorage.findAllByItemId(itemDto.getId()))
+        itemDto.setComments(commentMapper.toDtoList(commentStorage.findAllByItemId(itemDto.getId()))
                 .orElse(new ArrayList<>()));
         return itemDto;
     }

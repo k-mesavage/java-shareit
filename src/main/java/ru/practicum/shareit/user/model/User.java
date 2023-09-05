@@ -7,7 +7,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "users")
-@Getter @Setter @ToString
+@Data
 public class User {
 
     @Id

@@ -10,12 +10,10 @@ public enum BookingState {
     CURRENT,
     PAST,
     FUTURE;
-    
     public static BookingState getValue(String state) {
         try {
             return BookingState.valueOf(state);
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             throw new UnsupportedStatusException(state);
         }
     }

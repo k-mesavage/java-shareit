@@ -34,7 +34,7 @@ public class CommentMapper {
                 .build();
     }
 
-    public Optional<List<CommentDto>> DtoList(Iterable<Comment> comments) {
+    public Optional<List<CommentDto>> toDtoList(Iterable<Comment> comments) {
         List<CommentDto> result = new ArrayList<>();
         for (Comment comment : comments) {
             result.add(toCommentDto(comment));

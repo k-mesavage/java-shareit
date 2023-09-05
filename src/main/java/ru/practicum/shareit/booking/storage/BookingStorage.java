@@ -13,7 +13,7 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
 
     @Query("select b from Booking b " +
             "where b.bookerId = (?1) order by b.start desc ")
-    List<Booking> findAllByBookerIdOrderByStartDesc(Long booker_id);
+    List<Booking> findAllByBookerIdOrderByStartDesc(Long bookerId);
 
     @Query("select b from Booking b " +
             "where b.bookerId = (?1) and b.end < (?2) order by b.start desc")
