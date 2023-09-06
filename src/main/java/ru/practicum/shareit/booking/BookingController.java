@@ -19,7 +19,7 @@ import static ru.practicum.shareit.utility.HttpHeader.X_SHARER_USER_ID;
 @AllArgsConstructor
 public class BookingController {
 
-    BookingService service;
+    private final BookingService service;
 
     @PostMapping
     public BookingDto addBooking(@RequestHeader(X_SHARER_USER_ID) Long userId,

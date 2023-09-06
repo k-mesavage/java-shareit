@@ -142,5 +142,85 @@ public class BookingServiceImpl implements BookingService {
         }
         return bookingMapper.toDto(booking);
     }
+
+    private class HandleGetter {
+
+        private List<Booking> bookings = new ArrayList<>();
+
+        private List<Booking> HandleRequest (BookingState status, Long senderId, String sender) {
+            if (status.equals(CURRENT)) {
+                getCurrent(senderId, sender);
+            }
+            if (status.equals(ALL)) {
+                getAll(senderId, sender);
+            }
+            if (status.equals(PAST)) {
+                getPast(senderId, sender);
+            }
+            if (status.equals(FUTURE)) {
+                getFuture(senderId, sender);
+            }
+            if (status.equals(WAITING)) {
+                getWaiting(senderId, sender);
+            }
+            if (status.equals(REJECTED)) {
+                getRejected(senderId, sender);
+            }
+            return bookings;
+        }
+
+        private void getCurrent(Long senderId, String sender) {
+            if (sender.equals("user")) {
+                bookings = bookingStorage.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(senderId,
+                        LocalDateTime.now(),
+                        LocalDateTime.now());
+            } else if (sender.equals("owner")) {
+                bookings = bookingStorage
+                        .findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(senderId,
+                                LocalDateTime.now(),
+                                LocalDateTime.now());
+            }
+        }
+
+        private void getAll(Long senderId, String sender) {
+            if (sender.equals("user")) {
+                bookings = bookingStorage.findAllByBookerIdOrderByStartDesc(senderId);
+            } else if (sender.equals("owner")) {
+                bookings = bookingStorage.findAllByItemOwnerIdOrderByStartDesc(senderId);
+            }
+        }
+
+        private void getPast(Long senderId, String sender) {
+            if (sender.equals("user")) {
+                bookings = bookingStorage.findAllByBookerIdAndEndBeforeOrderByStartDesc(senderId, LocalDateTime.now());
+            } else if (sender.equals("owner")) {
+                bookings = bookingStorage.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(senderId, LocalDateTime.now());
+            }
+        }
+
+        private void getFuture(Long senderId, String sender) {
+            if (sender.equals("user")) {
+                bookings = bookingStorage.findAllByBookerIdAndStatusFuture(senderId, LocalDateTime.now());
+            } else if (sender.equals("owner")) {
+                bookings = bookingStorage.findAllByItemOwnerIdAndStatusFuture(senderId, LocalDateTime.now());
+            }
+        }
+
+        private void getWaiting(Long senderId, String sender) {
+            if (sender.equals("user")) {
+                bookings = bookingStorage.findAllByBookerIdAndStatus(senderId, "WAITING");
+            } else if (sender.equals("owner")) {
+                bookings = bookingStorage.findAllByItemOwnerIdAndStatusOrderByStartDesc(senderId, "WAITING");
+            }
+        }
+
+        private void getRejected(Long senderId, String sender) {
+            if (sender.equals("user")) {
+                bookings = bookingStorage.findAllByBookerIdAndStatus(senderId, "REJECTED");
+            } else if (sender.equals("owner")) {
+                bookings = bookingStorage.findAllByItemOwnerIdAndStatusOrderByStartDesc(senderId, "REJECTED");
+            }
+        }
+    }
 }
 

@@ -7,8 +7,8 @@ import lombok.Data;
 @Builder
 public class ShortBookingDto {
 
-    Long id;
+    private Long id;
 
-    Long bookerId;
+    private Long bookerId;
 
 }

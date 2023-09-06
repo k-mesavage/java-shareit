@@ -4,9 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
-@Data
 @Entity
 @Builder
 @Table(name = "bookings")
@@ -33,21 +31,35 @@ public class Booking {
     @Column(name = "status")
     private String status;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Booking booking = (Booking) o;
-        return Objects.equals(id, booking.id)
-                && Objects.equals(start, booking.start)
-                && Objects.equals(end, booking.end)
-                && Objects.equals(itemId, booking.itemId)
-                && Objects.equals(bookerId, booking.bookerId)
-                && Objects.equals(status, booking.status);
+    public Long getId() {
+        return id;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, bookerId);
+    public LocalDateTime getStart() {
+        return start;
+    }
+
+    public LocalDateTime getEnd() {
+        return end;
+    }
+
+    public Long getItemId() {
+        return itemId;
+    }
+
+    public Long getBookerId() {
+        return bookerId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
