@@ -7,6 +7,9 @@ import ru.practicum.shareit.booking.params.BookingState;
 import ru.practicum.shareit.booking.params.UserType;
 import ru.practicum.shareit.booking.storage.BookingStorage;
 
+import static ru.practicum.shareit.booking.params.UserType.USER;
+import static ru.practicum.shareit.booking.params.UserType.OWNER;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,10 +23,10 @@ public class GetWaiting extends BookingStateHandler {
     @Override
     public List<BookingDto> getBookings(Long senderId, UserType userType) {
         List<Booking> bookings = new ArrayList<>();
-        if (userType.equals(UserType.USER)) {
+        if (userType.equals(USER)) {
             bookings = bookingStorage.findAllByBookerIdAndStatus(senderId, getState().toString());
         }
-        if (userType.equals(UserType.OWNER)) {
+        if (userType.equals(OWNER)) {
             bookings = bookingStorage.findAllByItemOwnerIdAndStatusOrderByStartDesc(senderId, getState().toString());
         }
         return bookingMapper.fromListToDtoList(bookings);
