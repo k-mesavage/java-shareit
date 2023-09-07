@@ -114,6 +114,6 @@ public class BookingServiceImpl implements BookingService {
                 new GetCurrent(bookingStorage, bookingMapper),
                 new GetAll(bookingStorage, bookingMapper));
         BookingState status = BookingState.getValue(state);
-         return handler.handle(bookerId, status, userType);
+        return handler.handle(bookerId, status, userType);
     }
 }
