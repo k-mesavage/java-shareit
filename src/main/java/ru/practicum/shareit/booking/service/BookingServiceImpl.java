@@ -96,8 +96,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto getBookingById(Long bookingId, Long userId) {
         Booking booking = bookingStorage.getReferenceById(bookingId);
         Item item = itemStorage.getReferenceById(booking.getItemId());
-        try {
-            objectChecker.userAccess(booking.getBookerId(), userId);
+        try { objectChecker.userAccess(booking.getBookerId(), userId);
         } catch (ObjectNotFoundException e) {
             objectChecker.userAccess(item.getOwner().getId(), userId);
         }
