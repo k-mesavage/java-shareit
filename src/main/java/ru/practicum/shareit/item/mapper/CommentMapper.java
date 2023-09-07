@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item.mapper;
 
-import lombok.Data;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.model.Item;
@@ -12,8 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Data
-@Service
+@Component
 public class CommentMapper {
 
     public CommentDto toCommentDto(Comment comment) {

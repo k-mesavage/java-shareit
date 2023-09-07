@@ -10,10 +10,9 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-
 public class CommentDto {
 
-    public Long id;
+    private Long id;
 
     @NotBlank(groups = {CreateConstraint.class, UpdateConstraint.class})
     private String text;

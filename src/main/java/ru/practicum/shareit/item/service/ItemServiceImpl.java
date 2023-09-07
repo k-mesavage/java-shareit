@@ -42,7 +42,6 @@ public class ItemServiceImpl implements ItemService {
     private final ObjectChecker objectChecker;
 
     @Override
-    @Transactional
     public ItemDto addItem(Long userId, ItemDto itemDto) {
         objectChecker.userFound(userId);
         Item newItem = itemMapper.fromItemDto(itemDto);
@@ -51,7 +50,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional
     public ItemDto updateItem(Long itemId, Long userId, ItemDto itemDto) {
         Item updatedItem = itemStorage.getReferenceById(itemId);
         objectChecker.userAccess(updatedItem.getOwner().getId(), userId);
@@ -69,7 +67,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional
     public ItemDto getItemById(Long userId, Long itemId) {
         Item item = itemStorage.getReferenceById(itemId);
         ItemDto itemDto = itemMapper.toItemDto(item);
@@ -81,7 +78,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional
     public List<ItemDto> getAllItemsByUserId(Long userId) {
         List<ItemDto> items = itemStorage.findAllByOwnerId(userId)
                 .stream()
@@ -96,7 +92,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional
     public void deleteItem(Long userId, Long itemId) {
         itemStorage.deleteById(itemId);
     }
@@ -111,7 +106,6 @@ public class ItemServiceImpl implements ItemService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     @Override
     public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
         LocalDateTime created = LocalDateTime.now();

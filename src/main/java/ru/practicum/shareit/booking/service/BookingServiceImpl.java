@@ -37,6 +37,10 @@ public class BookingServiceImpl implements BookingService {
 
     private final ObjectChecker objectChecker;
 
+    HandleGetterForUser getterForUser = new GetRejected(new GetWaiting(new GetFuture(new GetPast(new GetAll(new GetCurrent(null))))));
+
+    HandleGetterForOwner getterForOwner = new GetRejectedForOwner(new GetWaitingForOwner(new GetFutureForOwner(new GetPastForOwner(new GetAllForOwner(new GetCurrentForOwner(null))))));
+
     @Override
     @Transactional
     public BookingDto addBooking(Long bookerId, WorkingBookingDto workingBookingDto) {
@@ -105,29 +109,9 @@ public class BookingServiceImpl implements BookingService {
 
     public List<BookingDto> getAllItemsBookingByOwner(Long ownerId, String state) {
         objectChecker.userFound(ownerId);
-        List<Booking> bookings = new ArrayList<>();
         BookingState status = BookingState.getValue(state);
-        if (status.equals(CURRENT)) {
-            bookings = bookingStorage
-                    .findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(ownerId,
-                            LocalDateTime.now(),
-                            LocalDateTime.now());
-        }
-        if (status.equals(ALL)) {
-            bookings = bookingStorage.findAllByItemOwnerIdOrderByStartDesc(ownerId);
-        }
-        if (status.equals(PAST)) {
-            bookings = bookingStorage.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(ownerId, LocalDateTime.now());
-        }
-        if (status.equals(FUTURE)) {
-            bookings = bookingStorage.findAllByItemOwnerIdAndStatusFuture(ownerId, LocalDateTime.now());
-        }
-        if (status.equals(WAITING)) {
-            bookings = bookingStorage.findAllByItemOwnerIdAndStatusOrderByStartDesc(ownerId, state);
-        }
-        if (status.equals(REJECTED)) {
-            bookings = bookingStorage.findAllByItemOwnerIdAndStatusOrderByStartDesc(ownerId, state);
-        }
+
+        List<Booking> bookings = getterForOwner.handleRequest(status, ownerId);
         return bookingMapper.fromListToDtoList(bookings);
     }
 
@@ -143,83 +127,223 @@ public class BookingServiceImpl implements BookingService {
         return bookingMapper.toDto(booking);
     }
 
-    private class HandleGetter {
+    abstract class HandleGetterForUser {
 
-        private List<Booking> bookings = new ArrayList<>();
+        HandleGetterForUser handleGetterForUser;
 
-        private List<Booking> HandleRequest (BookingState status, Long senderId, String sender) {
-            if (status.equals(CURRENT)) {
-                getCurrent(senderId, sender);
-            }
-            if (status.equals(ALL)) {
-                getAll(senderId, sender);
-            }
-            if (status.equals(PAST)) {
-                getPast(senderId, sender);
-            }
-            if (status.equals(FUTURE)) {
-                getFuture(senderId, sender);
-            }
-            if (status.equals(WAITING)) {
-                getWaiting(senderId, sender);
-            }
-            if (status.equals(REJECTED)) {
-                getRejected(senderId, sender);
-            }
-            return bookings;
+        List<Booking> bookings;
+
+        public HandleGetterForUser(HandleGetterForUser handleGetterForUser) {
+            this.handleGetterForUser = handleGetterForUser;
         }
 
-        private void getCurrent(Long senderId, String sender) {
-            if (sender.equals("user")) {
-                bookings = bookingStorage.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(senderId,
-                        LocalDateTime.now(),
-                        LocalDateTime.now());
-            } else if (sender.equals("owner")) {
-                bookings = bookingStorage
+        abstract List<Booking> handleRequest(BookingState status, Long senderId, String sender);
+    }
+
+    class GetCurrent extends HandleGetterForUser {
+
+        public GetCurrent(HandleGetterForUser handleGetterForUser) {
+            super(handleGetterForUser);
+        }
+
+        @Override
+        List<Booking> handleRequest(BookingState status, Long senderId, String sender) {
+            if (!status.equals(CURRENT)) {
+                handleGetterForUser.handleRequest(status, senderId, sender);
+            }
+            this.bookings = bookingStorage.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(senderId,
+                    LocalDateTime.now(),
+                    LocalDateTime.now());
+            return bookings;
+        }
+    }
+
+    class GetAll extends HandleGetterForUser {
+
+        public GetAll(HandleGetterForUser handleGetterForUser) {
+            super(handleGetterForUser);
+        }
+
+        @Override
+        List<Booking> handleRequest(BookingState status, Long senderId, String sender) {
+            if (!status.equals(ALL)) {
+                handleGetterForUser.handleRequest(status, senderId, sender);
+            }
+            this.bookings = bookingStorage.findAllByBookerIdOrderByStartDesc(senderId);
+            return bookings;
+        }
+    }
+
+    class GetPast extends HandleGetterForUser {
+
+        public GetPast(HandleGetterForUser handleGetterForUser) {
+            super(handleGetterForUser);
+        }
+
+        @Override
+        List<Booking> handleRequest(BookingState status, Long senderId, String sender) {
+            if (!status.equals(PAST)) {
+                handleGetterForUser.handleRequest(status, senderId, sender);
+            }
+            this.bookings = bookingStorage.findAllByBookerIdAndEndBeforeOrderByStartDesc(senderId, LocalDateTime.now());
+            return bookings;
+        }
+    }
+
+    class GetFuture extends HandleGetterForUser {
+
+        public GetFuture(HandleGetterForUser handleGetterForUser) {
+            super(handleGetterForUser);
+        }
+
+        @Override
+        List<Booking> handleRequest(BookingState status, Long senderId, String sender) {
+            if (!status.equals(FUTURE)) {
+                handleGetterForUser.handleRequest(status, senderId, sender);
+            }
+            this.bookings = bookingStorage.findAllByBookerIdAndStatusFuture(senderId, LocalDateTime.now());
+            return bookings;
+        }
+    }
+
+    class GetWaiting extends HandleGetterForUser {
+
+        public GetWaiting(HandleGetterForUser handleGetterForUser) {
+            super(handleGetterForUser);
+        }
+
+        @Override
+        List<Booking> handleRequest(BookingState status, Long senderId, String sender) {
+            if (!status.equals(WAITING)) {
+                handleGetterForUser.handleRequest(status, senderId, sender);
+            }
+            this.bookings = bookingStorage.findAllByBookerIdAndStatus(senderId, "WAITING");
+            return bookings;
+        }
+    }
+
+    class GetRejected extends HandleGetterForUser {
+
+        public GetRejected(HandleGetterForUser handleGetterForUser) {
+            super(handleGetterForUser);
+        }
+
+        @Override
+        List<Booking> handleRequest(BookingState status, Long senderId, String sender) {
+            this.bookings = bookingStorage.findAllByBookerIdAndStatus(senderId, "REJECTED");
+            return bookings;
+        }
+    }
+
+    abstract class HandleGetterForOwner {
+
+        HandleGetterForOwner handleGetterForOwner;
+
+        List<Booking> bookings;
+
+        public HandleGetterForOwner(HandleGetterForOwner handleGetterForOwner) {
+            this.handleGetterForOwner = handleGetterForOwner;
+        }
+
+        abstract List<Booking> handleRequest(BookingState status, Long senderId);
+    }
+
+    class GetCurrentForOwner extends HandleGetterForOwner {
+
+        public GetCurrentForOwner(HandleGetterForOwner handleGetterForOwner) {
+            super(handleGetterForOwner);
+        }
+
+        @Override
+        List<Booking> handleRequest(BookingState status, Long senderId) {
+            if (!status.equals(CURRENT)) {
+                handleGetterForOwner.handleRequest(status, senderId);
+            }
+                this.bookings = bookingStorage
                         .findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(senderId,
                                 LocalDateTime.now(),
                                 LocalDateTime.now());
-            }
+            return bookings;
+        }
+    }
+
+    class GetAllForOwner extends HandleGetterForOwner {
+
+        public GetAllForOwner(HandleGetterForOwner handleGetterForOwner) {
+            super(handleGetterForOwner);
         }
 
-        private void getAll(Long senderId, String sender) {
-            if (sender.equals("user")) {
-                bookings = bookingStorage.findAllByBookerIdOrderByStartDesc(senderId);
-            } else if (sender.equals("owner")) {
-                bookings = bookingStorage.findAllByItemOwnerIdOrderByStartDesc(senderId);
+        @Override
+        List<Booking> handleRequest(BookingState status, Long senderId) {
+            if (!status.equals(ALL)) {
+                handleGetterForOwner.handleRequest(status, senderId);
             }
+            this.bookings = bookingStorage.findAllByItemOwnerIdOrderByStartDesc(senderId);
+            return bookings;
+        }
+    }
+
+    class GetPastForOwner extends HandleGetterForOwner {
+
+        public GetPastForOwner(HandleGetterForOwner handleGetterForOwner) {
+            super(handleGetterForOwner);
         }
 
-        private void getPast(Long senderId, String sender) {
-            if (sender.equals("user")) {
-                bookings = bookingStorage.findAllByBookerIdAndEndBeforeOrderByStartDesc(senderId, LocalDateTime.now());
-            } else if (sender.equals("owner")) {
-                bookings = bookingStorage.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(senderId, LocalDateTime.now());
+        @Override
+        List<Booking> handleRequest(BookingState status, Long senderId) {
+            if (!status.equals(PAST)) {
+                handleGetterForOwner.handleRequest(status, senderId);
             }
+            this.bookings = bookingStorage.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(senderId, LocalDateTime.now());
+            return bookings;
+        }
+    }
+
+    class GetFutureForOwner extends HandleGetterForOwner {
+
+        public GetFutureForOwner(HandleGetterForOwner handleGetterForOwner) {
+            super(handleGetterForOwner);
         }
 
-        private void getFuture(Long senderId, String sender) {
-            if (sender.equals("user")) {
-                bookings = bookingStorage.findAllByBookerIdAndStatusFuture(senderId, LocalDateTime.now());
-            } else if (sender.equals("owner")) {
-                bookings = bookingStorage.findAllByItemOwnerIdAndStatusFuture(senderId, LocalDateTime.now());
+        @Override
+        List<Booking> handleRequest(BookingState status, Long senderId) {
+            if (!status.equals(FUTURE)) {
+                handleGetterForOwner.handleRequest(status, senderId);
             }
+            this.bookings = bookingStorage.findAllByItemOwnerIdAndStatusFuture(senderId, LocalDateTime.now());
+            return bookings;
+        }
+    }
+
+    class GetWaitingForOwner extends HandleGetterForOwner {
+
+        public GetWaitingForOwner(HandleGetterForOwner handleGetterForOwner) {
+            super(handleGetterForOwner);
         }
 
-        private void getWaiting(Long senderId, String sender) {
-            if (sender.equals("user")) {
-                bookings = bookingStorage.findAllByBookerIdAndStatus(senderId, "WAITING");
-            } else if (sender.equals("owner")) {
-                bookings = bookingStorage.findAllByItemOwnerIdAndStatusOrderByStartDesc(senderId, "WAITING");
+        @Override
+        List<Booking> handleRequest(BookingState status, Long senderId) {
+            if (!status.equals(WAITING)) {
+                handleGetterForOwner.handleRequest(status, senderId);
             }
+            this.bookings = bookingStorage.findAllByItemOwnerIdAndStatusOrderByStartDesc(senderId, "WAITING");
+            return bookings;
+        }
+    }
+
+    class GetRejectedForOwner extends HandleGetterForOwner {
+
+        public GetRejectedForOwner(HandleGetterForOwner handleGetterForOwner) {
+            super(handleGetterForOwner);
         }
 
-        private void getRejected(Long senderId, String sender) {
-            if (sender.equals("user")) {
-                bookings = bookingStorage.findAllByBookerIdAndStatus(senderId, "REJECTED");
-            } else if (sender.equals("owner")) {
-                bookings = bookingStorage.findAllByItemOwnerIdAndStatusOrderByStartDesc(senderId, "REJECTED");
+        @Override
+        List<Booking> handleRequest(BookingState status, Long senderId) {
+            if (!status.equals(REJECTED)) {
+                handleGetterForOwner.handleRequest(status, senderId);
             }
+            this.bookings = bookingStorage.findAllByItemOwnerIdAndStatusOrderByStartDesc(senderId, "REJECTED");
+            return bookings;
         }
     }
 }

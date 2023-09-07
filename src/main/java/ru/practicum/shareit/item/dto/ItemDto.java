@@ -12,20 +12,20 @@ import java.util.List;
 @Builder
 public class ItemDto {
 
-    public Long id;
+    private Long id;
 
     @NotBlank(groups = CreateConstraint.class)
-    public String name;
+    private String name;
 
     @NotBlank(groups = CreateConstraint.class)
-    public String description;
+    private String description;
 
     @NotNull(groups = CreateConstraint.class)
-    public Boolean available;
+    private Boolean available;
 
-    public ShortBookingDto lastBooking;
+    private ShortBookingDto lastBooking;
 
-    public ShortBookingDto nextBooking;
+    private ShortBookingDto nextBooking;
 
     private List<CommentDto> comments;
 }

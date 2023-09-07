@@ -27,6 +27,9 @@ public class ItemMapper {
     }
 
     public ShortItemDto toBooking(Item item) {
-        return new ShortItemDto(item.getId(), item.getName());
+        return ShortItemDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .build();
     }
 }

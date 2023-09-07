@@ -66,10 +66,10 @@ public class BookingMapper {
                         LocalDateTime.now(),
                         "APPROVED");
         if (lastBooking != null) {
-            itemDto.lastBooking = toShortBookingDto(lastBooking);
+            itemDto.setLastBooking(toShortBookingDto(lastBooking));
         }
         if (nextBooking != null) {
-            itemDto.nextBooking = toShortBookingDto(nextBooking);
+            itemDto.setNextBooking(toShortBookingDto(nextBooking));
         }
         return itemDto;
     }

@@ -15,11 +15,4 @@ public class ItemRequest {
     private User requestor;
 
     private LocalDate created;
-
-    public ItemRequest(Long id, String description, User requestor, LocalDate created) {
-        this.id = id;
-        this.description = description;
-        this.requestor = requestor;
-        this.created = created;
-    }
 }
