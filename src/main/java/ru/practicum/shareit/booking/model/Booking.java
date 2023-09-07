@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 @Table(name = "bookings")
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class Booking {
 
     @Id
@@ -30,36 +32,4 @@ public class Booking {
 
     @Column(name = "status")
     private String status;
-
-    public Long getId() {
-        return id;
-    }
-
-    public LocalDateTime getStart() {
-        return start;
-    }
-
-    public LocalDateTime getEnd() {
-        return end;
-    }
-
-    public Long getItemId() {
-        return itemId;
-    }
-
-    public Long getBookerId() {
-        return bookerId;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 }

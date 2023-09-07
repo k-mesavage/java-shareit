@@ -1,0 +1,41 @@
+package ru.practicum.shareit.handler;
+
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.params.BookingState;
+import ru.practicum.shareit.booking.params.UserType;
+import ru.practicum.shareit.booking.storage.BookingStorage;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+public class GetCurrent extends BookingStateHandler {
+
+    @Override
+    public BookingState getState() {
+        return BookingState.CURRENT;
+    }
+
+    @Override
+    public List<BookingDto> getBookings(Long senderId, UserType userType) {
+        List<Booking> bookings = new ArrayList<>();
+        if (userType.equals(UserType.USER)) {
+            bookings = bookingStorage.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(senderId,
+                    LocalDateTime.now(),
+                    LocalDateTime.now());
+        }
+        if (userType.equals(UserType.OWNER)) {
+            bookings = bookingStorage
+                    .findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(senderId,
+                            LocalDateTime.now(),
+                            LocalDateTime.now());
+        }
+        return bookingMapper.fromListToDtoList(bookings);
+    }
+
+    public GetCurrent(BookingStorage bookingStorage, BookingMapper bookingMapper) {
+        super(bookingStorage, bookingMapper);
+    }
+}

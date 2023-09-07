@@ -2,6 +2,7 @@ package ru.practicum.shareit.utility;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.WorkingBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.storage.BookingStorage;
@@ -17,6 +18,7 @@ import java.util.Objects;
 import static ru.practicum.shareit.booking.params.BookingState.APPROVED;
 
 @Service
+@Transactional(noRollbackFor = Throwable.class)
 @RequiredArgsConstructor
 public class ObjectChecker {
 

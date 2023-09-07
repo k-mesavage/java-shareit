@@ -32,4 +32,17 @@ public class ItemMapper {
                 .name(item.getName())
                 .build();
     }
+
+    public Item updateItem(Item updatedItem, ItemDto itemDto) {
+        if (itemDto.getName() != null && !itemDto.getName().isBlank()) {
+            updatedItem.setName(itemDto.getName());
+        }
+        if (itemDto.getDescription() != null && !itemDto.getDescription().isBlank()) {
+            updatedItem.setDescription(itemDto.getDescription());
+        }
+        if (itemDto.getAvailable() != null) {
+            updatedItem.setAvailable(itemDto.getAvailable());
+        }
+        return updatedItem;
+    }
 }

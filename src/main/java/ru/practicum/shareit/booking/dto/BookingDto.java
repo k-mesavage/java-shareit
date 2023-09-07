@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.item.dto.ShortItemDto;
@@ -19,7 +18,6 @@ public class BookingDto {
     @NotBlank(groups = CreateConstraint.class)
     private LocalDateTime start;
 
-    @JsonFormat
     @NotBlank(groups = CreateConstraint.class)
     private LocalDateTime end;
 

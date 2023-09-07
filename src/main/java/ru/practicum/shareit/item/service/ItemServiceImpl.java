@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.item.dto.CommentDto;
@@ -23,7 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
@@ -42,6 +43,7 @@ public class ItemServiceImpl implements ItemService {
     private final ObjectChecker objectChecker;
 
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public ItemDto addItem(Long userId, ItemDto itemDto) {
         objectChecker.userFound(userId);
         Item newItem = itemMapper.fromItemDto(itemDto);
@@ -50,18 +52,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public ItemDto updateItem(Long itemId, Long userId, ItemDto itemDto) {
         Item updatedItem = itemStorage.getReferenceById(itemId);
         objectChecker.userAccess(updatedItem.getOwner().getId(), userId);
-        if (itemDto.getName() != null && !itemDto.getName().isBlank()) {
-            updatedItem.setName(itemDto.getName());
-        }
-        if (itemDto.getDescription() != null && !itemDto.getDescription().isBlank()) {
-            updatedItem.setDescription(itemDto.getDescription());
-        }
-        if (itemDto.getAvailable() != null) {
-            updatedItem.setAvailable(itemDto.getAvailable());
-        }
+        updatedItem = itemMapper.updateItem(updatedItem, itemDto);
         itemStorage.save(updatedItem);
         return itemMapper.toItemDto(updatedItem);
     }
@@ -92,6 +87,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void deleteItem(Long userId, Long itemId) {
         itemStorage.deleteById(itemId);
     }
@@ -107,6 +103,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
         LocalDateTime created = LocalDateTime.now();
         objectChecker.userFound(userId);
@@ -118,9 +115,8 @@ public class ItemServiceImpl implements ItemService {
         return commentMapper.toCommentDto(commentStorage.save(comment));
     }
 
-    private ItemDto setItemComments(ItemDto itemDto) {
+    private void setItemComments(ItemDto itemDto) {
         itemDto.setComments(commentMapper.toDtoList(commentStorage.findAllByItemId(itemDto.getId()))
                 .orElse(new ArrayList<>()));
-        return itemDto;
     }
 }
