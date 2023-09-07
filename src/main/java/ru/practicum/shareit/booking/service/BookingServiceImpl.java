@@ -96,15 +96,17 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto getBookingById(Long bookingId, Long userId) {
         Booking booking = bookingStorage.getReferenceById(bookingId);
         Item item = itemStorage.getReferenceById(booking.getItemId());
-        try { objectChecker.userAccess(booking.getBookerId(), userId);
+        try {
+            objectChecker.userAccess(booking.getBookerId(), userId);
         } catch (ObjectNotFoundException e) {
             objectChecker.userAccess(item.getOwner().getId(), userId);
         }
         return bookingMapper.toDto(booking);
     }
 
-    private List<BookingDto> getAllBookingsForUserOrOwnerByUserIdAndState
-            (Long bookerId, String state, UserType userType) {
+    private List<BookingDto> getAllBookingsForUserOrOwnerByUserIdAndState(Long bookerId,
+                                                                          String state,
+                                                                          UserType userType) {
         final BookingStateHandler handler = BookingStateHandler.link(
                 new GetRejected(bookingStorage, bookingMapper),
                 new GetWaiting(bookingStorage, bookingMapper),
