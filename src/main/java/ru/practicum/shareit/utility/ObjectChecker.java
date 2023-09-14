@@ -97,4 +97,10 @@ public class ObjectChecker {
             throw new BadRequestException("Booking Found Exception");
         }
     }
+
+    public void pageRequestLegalRequest(int from, int size) {
+        if (from < 0 || size < 0) {
+            throw new IllegalArgumentException("Page Request Exception");
+        }
+    }
 }

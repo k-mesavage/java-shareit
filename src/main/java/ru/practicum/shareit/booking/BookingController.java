@@ -63,9 +63,11 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> getAllBookingsByUser(@RequestHeader(X_SHARER_USER_ID) Long userId,
-                                           @RequestParam(defaultValue = "ALL") String state) {
+                                           @RequestParam(defaultValue = "ALL") String state,
+                                                 @RequestParam(defaultValue = "0") int from,
+                                                 @RequestParam(defaultValue = "10") int size) {
         log.info("Начало обработки запроса на получение списка бронирований");
-        List<BookingDto> bookings = service.getAllBookingsByUser(userId, state);
+        List<BookingDto> bookings = service.getAllBookingsByUser(userId, state, from, size);
         log.info("Окончание обработки запроса на получение списка бронирований");
         return bookings;
     }

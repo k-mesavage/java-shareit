@@ -2,7 +2,6 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +20,6 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 import ru.practicum.shareit.utility.ObjectChecker;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 import static ru.practicum.shareit.booking.params.BookingState.*;
@@ -81,18 +79,24 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllBookingsByUser(Long bookerId, String state) {
+    public List<BookingDto> getAllBookingsByUser(Long bookerId, String state, int from, int size) {
         objectChecker.userFound(bookerId);
+        objectChecker.pageRequestLegalRequest(from, size);
         UserType userType = UserType.USER;
-        return getAllBookingsForUserOrOwnerByUserIdAndState(bookerId, state, userType);
+        if (from < 0 || size < 0) {
+            throw new IllegalArgumentException("Page Request Exception");
+        }
+        PageRequest pageRequest = PageRequest.of(from > 0 ? from / size : 0, size);
+        return getAllBookingsForUserOrOwnerByUserIdAndState(bookerId, state, userType, pageRequest);
     }
 
     @Override
     public List<BookingDto> getAllItemsBookingByOwner(Long ownerId, String state, int from, int size) {
         objectChecker.userFound(ownerId);
+        objectChecker.pageRequestLegalRequest(from, size);
         UserType userType = UserType.OWNER;
-        PageRequest pageRequest = PageRequest.of(from, size);
-        return getAllBookingsForUserOrOwnerByUserIdAndState(ownerId, state, userType);
+        PageRequest pageRequest = PageRequest.of(from > 0 ? from / size : 0, size);
+        return getAllBookingsForUserOrOwnerByUserIdAndState(ownerId, state, userType, pageRequest);
     }
 
     @Override
@@ -110,7 +114,8 @@ public class BookingServiceImpl implements BookingService {
 
     private List<BookingDto> getAllBookingsForUserOrOwnerByUserIdAndState(Long bookerId,
                                                                           String state,
-                                                                          UserType userType) {
+                                                                          UserType userType,
+                                                                          PageRequest pageRequest) {
         final BookingStateHandler handler = BookingStateHandler.link(
                 new GetRejected(bookingStorage, bookingMapper),
                 new GetWaiting(bookingStorage, bookingMapper),
@@ -119,6 +124,6 @@ public class BookingServiceImpl implements BookingService {
                 new GetCurrent(bookingStorage, bookingMapper),
                 new GetAll(bookingStorage, bookingMapper));
         BookingState status = BookingState.getValue(state);
-        return handler.handle(bookerId, status, userType);
+        return handler.handle(bookerId, status, userType, pageRequest);
     }
 }

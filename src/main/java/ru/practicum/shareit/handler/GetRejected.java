@@ -1,5 +1,6 @@
 package ru.practicum.shareit.handler;
 
+import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
@@ -20,13 +21,13 @@ public class GetRejected extends BookingStateHandler {
     }
 
     @Override
-    public List<BookingDto> getBookings(Long senderId, UserType userType) {
+    public List<BookingDto> getBookings(Long senderId, UserType userType, PageRequest pageRequest) {
         List<Booking> bookings = new ArrayList<>();
         if (userType.equals(USER)) {
-            bookings = bookingStorage.findAllByBookerIdAndStatus(senderId, getState().toString());
+            bookings = bookingStorage.findAllByBookerIdAndStatus(senderId, getState().toString(), pageRequest);
         }
         if (userType.equals(OWNER)) {
-            bookings = bookingStorage.findAllByItemOwnerIdAndStatusOrderByStartDesc(senderId, getState().toString());
+            bookings = bookingStorage.findAllByItemOwnerIdAndStatusOrderByStartDesc(senderId, getState().toString(), pageRequest);
         }
         return bookingMapper.fromListToDtoList(bookings);
     }

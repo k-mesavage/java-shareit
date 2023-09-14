@@ -1,5 +1,6 @@
 package ru.practicum.shareit.handler;
 
+import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
@@ -21,13 +22,13 @@ public class GetAll extends BookingStateHandler {
     }
 
     @Override
-    public List<BookingDto> getBookings(Long senderId, UserType userType) {
+    public List<BookingDto> getBookings(Long senderId, UserType userType, PageRequest pageRequest) {
         List<Booking> bookings = new ArrayList<>();
         if (userType.equals(USER)) {
-            bookings = bookingStorage.findAllByBookerIdOrderByStartDesc(senderId);
+            bookings = bookingStorage.findAllByBookerIdOrderByStartDesc(senderId, pageRequest);
         }
         if (userType.equals(OWNER)) {
-            bookings = bookingStorage.findAllByItemOwnerIdOrderByStartDesc(senderId);
+            bookings = bookingStorage.findAllByItemOwnerIdOrderByStartDesc(senderId, pageRequest);
         }
         return bookingMapper.fromListToDtoList(bookings);
     }

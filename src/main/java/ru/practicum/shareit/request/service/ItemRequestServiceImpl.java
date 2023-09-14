@@ -12,6 +12,7 @@ import ru.practicum.shareit.utility.ObjectChecker;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,9 +46,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .of(from, size, Sort.by("created").descending()));
         requestPage.forEach(allItemRequests::add);
         List<ItemRequestDto> finalListOfRequests = requestMapper.fromListToItemRequestList(allItemRequests);
-        finalListOfRequests.stream()
+        finalListOfRequests = finalListOfRequests.stream()
                 .filter(i -> !i.getRequesterId().equals(userId))
-                .forEach(requestMapper::addItemsToRequest);
+                .collect(Collectors.toList());
+        finalListOfRequests.forEach(requestMapper::addItemsToRequest);
         return finalListOfRequests;
     }
 
