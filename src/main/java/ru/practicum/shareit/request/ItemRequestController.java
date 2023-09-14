@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request;
 
+import lombok.Lombok;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -32,5 +33,12 @@ public class ItemRequestController {
     @GetMapping
     public List<ItemRequestDto> getAllUserRequests(@RequestHeader(X_SHARER_USER_ID) Long userId) {
         return requestService.getAllItemRequestsByUser(userId);
+    }
+
+    @GetMapping("/all")
+    public List<ItemRequestDto> getAllRequests(@RequestHeader(X_SHARER_USER_ID) Long userId,
+                                               @RequestParam(defaultValue = "0") int from,
+                                               @RequestParam(defaultValue = "10") int size) {
+        return requestService.getAllItemRequests(userId, from, size);
     }
 }

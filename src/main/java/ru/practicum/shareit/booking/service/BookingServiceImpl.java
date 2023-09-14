@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 import ru.practicum.shareit.utility.ObjectChecker;
 
+import java.awt.print.Pageable;
 import java.util.List;
 
 import static ru.practicum.shareit.booking.params.BookingState.*;
@@ -85,9 +88,10 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllItemsBookingByOwner(Long ownerId, String state) {
+    public List<BookingDto> getAllItemsBookingByOwner(Long ownerId, String state, int from, int size) {
         objectChecker.userFound(ownerId);
         UserType userType = UserType.OWNER;
+        PageRequest pageRequest = PageRequest.of(from, size);
         return getAllBookingsForUserOrOwnerByUserIdAndState(ownerId, state, userType);
     }
 

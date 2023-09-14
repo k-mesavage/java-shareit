@@ -52,9 +52,11 @@ public class BookingController {
 
     @GetMapping("/owner")
     public List<BookingDto> getAllItemsBookingByOwner(@RequestHeader(X_SHARER_USER_ID) Long userId,
-                                                 @RequestParam(defaultValue = "ALL") String state) {
+                                                 @RequestParam(defaultValue = "ALL") String state,
+                                                      @RequestParam(defaultValue = "0") int from,
+                                                      @RequestParam(defaultValue = "10") int size) {
         log.info("Начало обработки запроса на получение списка бронирований владельцем");
-        List<BookingDto> bookings = service.getAllItemsBookingByOwner(userId, state);
+        List<BookingDto> bookings = service.getAllItemsBookingByOwner(userId, state, from, size);
         log.info("Окончание обработки запроса на получение списка бронирований владельцем");
         return bookings;
     }

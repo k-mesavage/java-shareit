@@ -10,6 +10,7 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,14 +26,14 @@ public class RequestMapper {
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
                 .requesterId(itemRequest.getRequesterId())
-                .created(itemRequest.getCreationDate())
+                .created(itemRequest.getCreated())
                 .build();
     }
 
     public void addItemsToRequest(ItemRequestDto requestDto) {
         List<ItemDto> actualItems = itemMapper.toItemDtoList(itemStorage
                 .findAllByRequestIdOrderByIdDesc(requestDto.getId()));
-        requestDto.setItems(actualItems);
+        requestDto.setItems(Objects.requireNonNullElseGet(actualItems, List::of));
     }
 
     public ItemRequest fromItemRequestDto(ItemRequestDto itemRequestDto) {
@@ -40,7 +41,7 @@ public class RequestMapper {
                 .id(itemRequestDto.getId())
                 .description(itemRequestDto.getDescription())
                 .requesterId(itemRequestDto.getRequesterId())
-                .creationDate(itemRequestDto.getCreated())
+                .created(itemRequestDto.getCreated())
                 .build();
     }
 
@@ -50,6 +51,6 @@ public class RequestMapper {
 
     public void updateRequesterIdAndCreationDate(Long requesterId, ItemRequest itemRequest) {
         itemRequest.setRequesterId(requesterId);
-        itemRequest.setCreationDate(LocalDateTime.now());
+        itemRequest.setCreated(LocalDateTime.now());
     }
 }

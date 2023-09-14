@@ -25,5 +25,5 @@ public class ItemRequest {
     private Long requesterId;
 
     @Column(name = "creation_date")
-    private LocalDateTime creationDate;
+    private LocalDateTime created;
 }
