@@ -16,4 +16,6 @@ public interface ItemStorage extends JpaRepository<Item, Long> {
             + "where i.available = true and (lower(i.name) like lower(concat('%', (?1), '%')) "
             + "or lower(i.description) like lower(concat('%', (?1), '%'))) ")
     List<Item> searchAvailableItems(String param);
+
+    List<Item> findAllByRequestIdOrderByIdDesc(Long requestId);
 }

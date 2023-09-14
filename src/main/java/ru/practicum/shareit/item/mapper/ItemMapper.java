@@ -5,6 +5,9 @@ import ru.practicum.shareit.item.dto.ShortItemDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class ItemMapper {
 
@@ -13,6 +16,7 @@ public class ItemMapper {
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
+                .requestId(item.getRequestId())
                 .available(item.getAvailable())
                 .build();
     }
@@ -23,6 +27,7 @@ public class ItemMapper {
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
+                .requestId(itemDto.getRequestId())
                 .build();
     }
 
@@ -44,5 +49,9 @@ public class ItemMapper {
             updatedItem.setAvailable(itemDto.getAvailable());
         }
         return updatedItem;
+    }
+
+    public List<ItemDto> toItemDtoList(List<Item> items) {
+        return items.stream().map(this::toItemDto).collect(Collectors.toList());
     }
 }
