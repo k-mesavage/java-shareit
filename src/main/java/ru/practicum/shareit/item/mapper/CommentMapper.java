@@ -9,7 +9,6 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class CommentMapper {
@@ -32,11 +31,11 @@ public class CommentMapper {
                 .build();
     }
 
-    public Optional<List<CommentDto>> toDtoList(Iterable<Comment> comments) {
+    public List<CommentDto> toDtoList(List<Comment> comments) {
         List<CommentDto> result = new ArrayList<>();
         for (Comment comment : comments) {
             result.add(toCommentDto(comment));
         }
-        return Optional.of(result);
+        return result;
     }
 }

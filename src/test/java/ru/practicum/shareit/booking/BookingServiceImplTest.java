@@ -27,6 +27,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,16 +40,15 @@ class BookingServiceImplTest {
     @Mock
     private BookingStorage bookingStorage;
     @Mock
-    ObjectChecker objectChecker;
+    private ObjectChecker objectChecker;
     @Mock
-    private BookingMapper mapper;
+    private BookingMapper bookingMapper;
     @InjectMocks
     private BookingServiceImpl bookingService;
 
-    private LocalDateTime start = LocalDateTime.now().plusSeconds(1);
-    private LocalDateTime end = LocalDateTime.now().plusDays(1);
+    private final LocalDateTime start = LocalDateTime.now().plusSeconds(1);
+    private final LocalDateTime end = LocalDateTime.now().plusDays(1);
     private final ShortUserDto shortUserDto1 = new ShortUserDto(1L);
-
     private final User user = new User(1L, "Name", "email@mail.com");
     private final Item item = Item.builder()
             .id(1L)
@@ -86,13 +86,14 @@ class BookingServiceImplTest {
     @Test
     void shouldAddBooking() {
         when(itemStorage.getReferenceById(anyLong()))
-                .thenReturn(Item.builder().id(1L).owner(new User(1L, "name", "email@mail.com")).build());
-        when(bookingService.addBooking(anyLong(), request))
+                .thenReturn(item);
+        when(bookingMapper.toDto(any()))
                 .thenReturn(bookingDto);
 
-        BookingDto actualBookingDto = bookingService.addBooking(anyLong(), request);
+        BookingDto expectedBooking = bookingService.addBooking(1L, request);
 
-        assertEquals(actualBookingDto, bookingDto);
+        assertEquals(expectedBooking, bookingDto);
+        verify(bookingStorage).save(any());
     }
 
     @Test
@@ -103,9 +104,10 @@ class BookingServiceImplTest {
                 .thenReturn(item);
         when(userStorage.getReferenceById(anyLong()))
                 .thenReturn(user);
-        when(mapper.toDto(booking)).thenReturn(bookingDto);
+        when(bookingMapper.toDto(booking)).thenReturn(bookingDto);
         BookingDto expectedBooking = bookingService.requestBooking(true, 1L, 1L);
         assertEquals(bookingDto, expectedBooking);
+        verify(bookingStorage).save(any());
     }
 
     @Test
@@ -115,7 +117,7 @@ class BookingServiceImplTest {
 
         when(bookingStorage.findAllByBookerIdAndStatus(1L, "WAITING", PageRequest.of(1,1)))
                 .thenReturn(List.of(booking));
-        when(mapper.fromListToDtoList(any()))
+        when(bookingMapper.fromListToDtoList(any()))
                 .thenReturn(actualListOfBookings);
 
         List<BookingDto> expectedList = bookingService
@@ -135,7 +137,7 @@ class BookingServiceImplTest {
                 "WAITING",
                 PageRequest.of(1,1)))
                 .thenReturn(List.of(booking));
-        when(mapper.fromListToDtoList(any()))
+        when(bookingMapper.fromListToDtoList(any()))
                 .thenReturn(actualListOfBookings);
 
         List<BookingDto> expectedList = bookingService
@@ -150,7 +152,7 @@ class BookingServiceImplTest {
     void getBookingById() {
         when(bookingStorage.getReferenceById(1L)).thenReturn(booking);
         when(itemStorage.getReferenceById(1L)).thenReturn(item);
-        when(mapper.toDto(booking)).thenReturn(bookingDto);
+        when(bookingMapper.toDto(booking)).thenReturn(bookingDto);
 
         BookingDto expectedBooking = bookingService.getBookingById(1L, 1L);
         assertEquals(bookingDto, expectedBooking);

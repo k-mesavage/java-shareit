@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking.mapper;
+package ru.practicum.shareit.booking;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,11 +7,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.ShortBookingDto;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.storage.BookingStorage;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
@@ -31,6 +34,10 @@ class BookingMapperTest {
     private ItemStorage itemStorage;
     @Mock
     private BookingStorage bookingStorage;
+    @Mock
+    private ItemMapper itemMapper;
+    @Mock
+    private UserMapper userMapper;
     @InjectMocks
     private BookingMapper bookingMapper;
 
