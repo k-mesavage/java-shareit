@@ -6,19 +6,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.ShortBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.storage.BookingStorage;
-import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
-import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,11 +28,7 @@ class BookingMapperTest {
     @Mock
     private UserStorage userStorage;
     @Mock
-    private UserMapper userMapper;
-    @Mock
     private ItemStorage itemStorage;
-    @Mock
-    private ItemMapper itemMapper;
     @Mock
     private BookingStorage bookingStorage;
     @InjectMocks
@@ -50,7 +47,6 @@ class BookingMapperTest {
 
     @Test
     void toDto() {
-
         when(itemStorage.getReferenceById(anyLong()))
                 .thenReturn(item);
         when(userStorage.getReferenceById(anyLong()))
@@ -64,14 +60,48 @@ class BookingMapperTest {
 
     @Test
     void fromListToDtoList() {
+        List<BookingDto> actualBookings = List.of(BookingDto.builder()
+                .id(1L)
+                .status("APPROVED")
+                .build());
+        List<Booking> bookings = List.of(booking);
+
+        when(itemStorage.getReferenceById(anyLong()))
+                .thenReturn(item);
+        when(userStorage.getReferenceById(anyLong()))
+                .thenReturn(user);
+
+        List<BookingDto> expectedList = bookingMapper.fromListToDtoList(bookings);
+        assertEquals(actualBookings.size(), expectedList.size());
+        assertEquals(actualBookings.get(0).getId(), expectedList.get(0).getId());
+        assertEquals(actualBookings.get(0).getStatus(), "APPROVED");
 
     }
 
     @Test
     void toShortBookingDto() {
+        ShortBookingDto expectedBooking = bookingMapper.toShortBookingDto(booking);
+
+        assertEquals(expectedBooking.getId(), booking.getId());
+        assertEquals(expectedBooking.getBookerId(), booking.getBookerId());
     }
 
     @Test
     void addShortBooking() {
+        ItemDto actualItem = ItemDto.builder()
+                .id(1L)
+                .requestId(1L)
+                .name("Item Name").build();
+
+        when(bookingStorage
+                .findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(anyLong(), any(), anyString()))
+                .thenReturn(booking);
+        when(bookingStorage
+                .findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(anyLong(), any(), anyString()))
+                .thenReturn(booking);
+
+        ItemDto expectedItem = bookingMapper.addShortBooking(actualItem);
+        assertEquals(expectedItem.getLastBooking().getId(), booking.getId());
+        assertEquals(expectedItem.getNextBooking().getBookerId(), booking.getBookerId());
     }
 }
