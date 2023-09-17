@@ -98,7 +98,7 @@ public class ObjectChecker {
         }
     }
 
-    public void pageRequestLegalRequest(int from, int size) {
+    public void pageRequestLegal(int from, int size) {
         if (from < 0 || size < 0) {
             throw new IllegalArgumentException("Page Request Exception");
         }

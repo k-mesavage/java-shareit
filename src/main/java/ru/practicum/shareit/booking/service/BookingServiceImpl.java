@@ -42,9 +42,9 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public BookingDto addBooking(Long bookerId, WorkingBookingDto workingBookingDto) {
+        objectChecker.userFound(bookerId);
         objectChecker.checkDateTime(workingBookingDto);
         objectChecker.itemFound(workingBookingDto.getItemId());
-        objectChecker.userFound(bookerId);
         Item item = itemStorage.getReferenceById(workingBookingDto.getItemId());
         objectChecker.itemAvailable(item.getId());
         objectChecker.checkBookingDate(workingBookingDto, item.getId());
@@ -70,18 +70,18 @@ public class BookingServiceImpl implements BookingService {
         if (approved) {
             objectChecker.reApprove(booking);
             booking.setStatus(APPROVED.toString());
+            bookingStorage.save(booking);
         } else {
             booking.setStatus(REJECTED.toString());
+            bookingStorage.save(booking);
         }
-        bookingStorage.save(booking);
-
         return bookingMapper.toDto(booking);
     }
 
     @Override
     public List<BookingDto> getAllBookingsByUser(Long bookerId, String state, int from, int size) {
         objectChecker.userFound(bookerId);
-        objectChecker.pageRequestLegalRequest(from, size);
+        objectChecker.pageRequestLegal(from, size);
         UserType userType = UserType.USER;
         if (from < 0 || size < 0) {
             throw new IllegalArgumentException("Page Request Exception");
@@ -93,7 +93,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getAllItemsBookingByOwner(Long ownerId, String state, int from, int size) {
         objectChecker.userFound(ownerId);
-        objectChecker.pageRequestLegalRequest(from, size);
+        objectChecker.pageRequestLegal(from, size);
         UserType userType = UserType.OWNER;
         PageRequest pageRequest = PageRequest.of(from > 0 ? from / size : 0, size);
         return getAllBookingsForUserOrOwnerByUserIdAndState(ownerId, state, userType, pageRequest);
@@ -112,10 +112,10 @@ public class BookingServiceImpl implements BookingService {
         return bookingMapper.toDto(booking);
     }
 
-    private List<BookingDto> getAllBookingsForUserOrOwnerByUserIdAndState(Long bookerId,
-                                                                          String state,
-                                                                          UserType userType,
-                                                                          PageRequest pageRequest) {
+    public List<BookingDto> getAllBookingsForUserOrOwnerByUserIdAndState(Long bookerId,
+                                                                         String state,
+                                                                         UserType userType,
+                                                                         PageRequest pageRequest) {
         final BookingStateHandler handler = BookingStateHandler.link(
                 new GetRejected(bookingStorage, bookingMapper),
                 new GetWaiting(bookingStorage, bookingMapper),
