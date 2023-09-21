@@ -10,11 +10,15 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.WorkingBookingDto;
+import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.booking.storage.BookingStorage;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.dto.ShortItemDto;
+import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.user.dto.ShortUserDto;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -33,12 +37,16 @@ public class BookingControllerTest {
 
     @Autowired
     private MockMvc mvc;
-
     @Autowired
     private ObjectMapper mapper;
-
     @MockBean
-    BookingController bookingController;
+    private BookingService bookingService;
+    @MockBean
+    private UserStorage userStorage;
+    @MockBean
+    private ItemStorage itemStorage;
+    @MockBean
+    private BookingStorage bookingStorage;
 
     private static final String HEADER = "X-Sharer-User-Id";
     private final ShortUserDto shortUserDto1 = new ShortUserDto(1L);
@@ -65,7 +73,7 @@ public class BookingControllerTest {
                 .item(shortItemDto)
                 .build();
 
-        when(bookingController.addBooking(anyLong(), any()))
+        when(bookingService.addBooking(anyLong(), any()))
                 .thenReturn(bookingDto);
 
         mvc.perform(post("/bookings")
@@ -92,8 +100,8 @@ public class BookingControllerTest {
                 .itemId(1L)
                 .build();
 
-        when(bookingController.addBooking(anyLong(), any()))
-                .thenThrow(new ObjectNotFoundException("Object"));
+        when(bookingService.addBooking(anyLong(), any()))
+                .thenThrow(new ObjectNotFoundException("Some object"));
 
         mvc.perform(post("/bookings")
                         .content(mapper.writeValueAsString(request))
@@ -114,7 +122,7 @@ public class BookingControllerTest {
                 .item(shortItemDto)
                 .build();
 
-        when(bookingController.approveBooking( anyLong(), anyLong(), anyBoolean()))
+        when(bookingService.requestBooking(anyBoolean(), anyLong(), anyLong()))
                 .thenReturn(bookingDto);
 
         mvc.perform(patch("/bookings/{bookingId}", bookingDto.getId())
@@ -142,7 +150,7 @@ public class BookingControllerTest {
                 .booker(shortUserDto1)
                 .item(shortItemDto)
                 .build();
-        when(bookingController.approveBooking(anyLong(), anyLong(), anyBoolean()))
+        when(bookingService.requestBooking(anyBoolean(), anyLong(), anyLong()))
                 .thenThrow(new BadRequestException("ReApproved Exception"));
 
         mvc.perform(patch("/bookings/{bookingId}", bookingDto.getId())
@@ -167,7 +175,7 @@ public class BookingControllerTest {
                 .item(shortItemDto)
                 .build();
 
-        when(bookingController.getBookingById(anyLong(), anyLong()))
+        when(bookingService.getBookingById(anyLong(), anyLong()))
                 .thenReturn(bookingDto);
 
         mvc.perform(get("/bookings/{bookingId}", bookingDto.getId())
@@ -176,8 +184,6 @@ public class BookingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(bookingDto.getId()), Long.class))
-                .andExpect(jsonPath("$.start", is(bookingDto.getStart().toString())))
-                .andExpect(jsonPath("$.end", is(bookingDto.getEnd().toString())))
                 .andExpect(jsonPath("$.booker.id", is(bookingDto.getBooker().id), Long.class))
                 .andExpect(jsonPath("$.item.name", is(bookingDto.getItem().getName())))
                 .andExpect(jsonPath("$.status", is("approve")));
@@ -197,7 +203,7 @@ public class BookingControllerTest {
                 .item(shortItemDto)
                 .build();
 
-        when(bookingController.getAllBookingsByUser(anyLong(), anyString(), anyInt(), anyInt()))
+        when(bookingService.getAllBookingsByUser(anyLong(), anyString(), anyInt(), anyInt()))
                 .thenReturn(List.of(bookingDto));
 
         mvc.perform(

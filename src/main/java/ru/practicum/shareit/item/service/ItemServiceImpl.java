@@ -62,7 +62,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto getItemById(Long userId, Long itemId) {
-        objectChecker.itemFound(itemId);
         Item item = itemStorage.getReferenceById(itemId);
         ItemDto itemDto = itemMapper.toItemDto(item);
         setItemComments(itemDto);

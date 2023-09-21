@@ -20,21 +20,21 @@ import static ru.practicum.shareit.utility.HttpHeader.X_SHARER_USER_ID;
 @AllArgsConstructor
 public class ItemController {
 
-    private final ItemService service;
+    private final ItemService itemService;
 
     @GetMapping("/{itemId}")
     public ItemDto getItemInformation(@RequestHeader(X_SHARER_USER_ID) Long userId,
                                       @PathVariable Long itemId) {
         log.info("Начало обработки запроса на получение информации о вещи {}", itemId);
-        ItemDto item = service.getItemById(userId, itemId);
+        ItemDto itemDto = itemService.getItemById(userId, itemId);
         log.info("Окончание обработки запроса на получение информации о вещи {}", itemId);
-        return item;
+        return itemDto;
     }
 
     @GetMapping
     public List<ItemDto> getOwnerItems(@RequestHeader(X_SHARER_USER_ID) Long userId) {
         log.info("Начало обработки запроса на получение списка вещей пользователя {}", userId);
-        List<ItemDto> ownerItems = service.getAllItemsByUserId(userId);
+        List<ItemDto> ownerItems = itemService.getAllItemsByUserId(userId);
         log.info("Окончание обработки запроса на получение списка вещей пользователя {}", userId);
         return ownerItems;
     }
@@ -42,7 +42,7 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> searchItems(@RequestParam String text) {
         log.info("Начало обработки запроса на поиск с параметром {}", text);
-        List<ItemDto> resultOfSearch = service.searchItems(text);
+        List<ItemDto> resultOfSearch = itemService.searchItems(text);
         log.info("Окончание обработки запроса на поиск с параметром {}", text);
         return resultOfSearch;
     }
@@ -51,7 +51,7 @@ public class ItemController {
     public ItemDto addItem(@RequestHeader(X_SHARER_USER_ID) Long userId,
                         @RequestBody @Validated(CreateConstraint.class) ItemDto item) {
         log.info("Начало обработки запроса на добавление вещи пользователем {}", userId);
-        ItemDto newItem = service.addItem(userId, item);
+        ItemDto newItem = itemService.addItem(userId, item);
         log.info("Окончание обработки запроса на добавление вещи пользователем {}", userId);
         return newItem;
     }
@@ -61,7 +61,7 @@ public class ItemController {
                               @RequestHeader(X_SHARER_USER_ID) Long userId,
                               @RequestBody @Validated(UpdateConstraint.class) ItemDto itemDto) {
         log.info("Начало обработки запроса на обновление информации о вещи {}", itemId);
-        ItemDto updatedItem = service.updateItem(itemId, userId, itemDto);
+        ItemDto updatedItem = itemService.updateItem(itemId, userId, itemDto);
         log.info("Окончание обработки запроса на обновление информации о вещи {}", itemId);
         return updatedItem;
     }
@@ -70,7 +70,7 @@ public class ItemController {
     public void deleteItem(@RequestHeader(X_SHARER_USER_ID) Long userId,
                            @PathVariable Long itemId) {
         log.info("Начало обработки запроса на удаление вещи {}", itemId);
-        service.deleteItem(userId, itemId);
+        itemService.deleteItem(userId, itemId);
         log.info("Окончание обработки запроса на удаление вещи {}", itemId);
     }
 
@@ -79,7 +79,8 @@ public class ItemController {
                                  @PathVariable Long itemId,
                                  @RequestBody @Validated (CreateConstraint.class) CommentDto commentDto) {
 
+        CommentDto newComment = itemService.addComment(userId, itemId, commentDto);
         log.info("User {} add comment for Item {}", userId, itemId);
-        return service.addComment(userId, itemId, commentDto);
+        return newComment;
     }
 }
