@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS
 (
     id    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name  varchar(46),
-    email varchar(46) UNIQUE,
+    email varchar(46),
 CONSTRAINT unique_email UNIQUE (email)
 );
 CREATE TABLE IF NOT EXISTS

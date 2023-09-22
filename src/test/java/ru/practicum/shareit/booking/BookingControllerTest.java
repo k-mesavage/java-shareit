@@ -11,14 +11,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.WorkingBookingDto;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.booking.storage.BookingStorage;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.dto.ShortItemDto;
-import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.user.dto.ShortUserDto;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -41,12 +38,6 @@ public class BookingControllerTest {
     private ObjectMapper mapper;
     @MockBean
     private BookingService bookingService;
-    @MockBean
-    private UserStorage userStorage;
-    @MockBean
-    private ItemStorage itemStorage;
-    @MockBean
-    private BookingStorage bookingStorage;
 
     private static final String HEADER = "X-Sharer-User-Id";
     private final ShortUserDto shortUserDto1 = new ShortUserDto(1L);

@@ -1,30 +1,17 @@
 package ru.practicum.shareit.item;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import ru.practicum.shareit.booking.mapper.BookingMapper;
-import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mapper.CommentMapper;
-import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.item.storage.CommentStorage;
-import ru.practicum.shareit.item.storage.ItemStorage;
-import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
-import ru.practicum.shareit.utility.ObjectChecker;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -42,74 +29,40 @@ class ItemControllerTest {
     @Autowired
     private ObjectMapper mapper;
     @MockBean
-    private ItemStorage itemStorage;
+    private ItemController itemController;
     @MockBean
-    private UserStorage userStorage;
-    @MockBean
-    private CommentStorage commentStorage;
-    @MockBean
-    private BookingMapper bookingMapper;
-    @MockBean
-    private ItemMapper itemMapper;
-    @MockBean
-    private CommentMapper commentMapper;
-    @MockBean
-    private ObjectChecker objectChecker;
-    @MockBean
-    ItemController itemController;
-    @MockBean
-    ItemService itemService;
+    private ItemService itemService;
 
     private static final String HEADER = "X-Sharer-User-Id";
-    private final User user = new User(1L, "User name", "email@mail.com");
-    private final Item actualItem = Item.builder()
+    private static final ItemDto actualItemDto = ItemDto.builder()
             .id(1L)
-            .owner(user)
             .name("Item")
             .description("Item description")
             .available(true)
             .build();
-    private final ItemDto actualItemDto = ItemDto.builder()
-            .id(1L)
-            .name("Item")
-            .description("Item description")
-            .build();
-    private final List<ItemDto> actualItemList = List.of(actualItemDto);
-    private final CommentDto actualCommentDto = CommentDto.builder()
+    private static final List<ItemDto> actualItemList = List.of(actualItemDto);
+    private static final CommentDto actualCommentDto = CommentDto.builder()
             .id(1L)
             .text("Text of comment")
             .authorName("Author name")
             .build();
-    private final Booking booking = Booking.builder()
-            .id(1L)
-            .start(LocalDateTime.now())
-            .end(LocalDateTime.now().plusHours(1))
-            .itemId(1L)
-            .bookerId(1L)
-            .status("WAITING").build();
-
 
     @Test
     void getItemInformation() throws Exception {
-        ItemDto actualItemDto = ItemDto.builder()
-                .id(1L)
-                .name("Item")
-                .description("Item description")
-                .build();
-        when(itemService.getItemById(anyLong(), anyLong()))
+        when(itemController.getItemInformation(anyLong(), anyLong()))
                 .thenReturn(actualItemDto);
 
-        MvcResult result = mvc.perform(get("/items/{itemId}", 1L)
+        mvc.perform(get("/items/{itemId}", 1L)
                 .header(HEADER, 1L)
                 .characterEncoding(StandardCharsets.UTF_8)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-                .andReturn();
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(actualItemDto.getId()), Long.class));
     }
 
     @Test
-    @SneakyThrows
-    void getOwnerItems() {
+    void getOwnerItems() throws Exception {
         when(itemController.getOwnerItems(anyLong()))
                 .thenReturn(actualItemList);
 
@@ -123,8 +76,7 @@ class ItemControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void searchItems() {
+    void searchItems() throws Exception {
         when(itemController.searchItems(anyString()))
                 .thenReturn(actualItemList);
 
@@ -137,8 +89,7 @@ class ItemControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void addItem() {
+    void addItem() throws Exception {
         when(itemController.addItem(anyLong(), any()))
                 .thenReturn(actualItemDto);
 
@@ -153,8 +104,7 @@ class ItemControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void updateItem() {
+    void updateItem() throws Exception {
         when(itemController.updateItem(anyLong(), anyLong(), any()))
                 .thenReturn(actualItemDto);
 
@@ -169,8 +119,7 @@ class ItemControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void deleteItem() {
+    void deleteItem() throws Exception {
         mvc.perform(delete("/items/{itemId}", 1L)
                         .header(HEADER, 1L)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -180,8 +129,7 @@ class ItemControllerTest {
     }
 
     @Test
-    @SneakyThrows
-    void addComment() {
+    void addComment() throws Exception {
         when(itemController.addComment(anyLong(), anyLong(), any()))
                 .thenReturn(actualCommentDto);
 

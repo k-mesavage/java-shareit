@@ -27,8 +27,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class BookingServiceImplTest {
@@ -121,11 +120,26 @@ class BookingServiceImplTest {
                 .thenReturn(actualListOfBookings);
 
         List<BookingDto> expectedList = bookingService
-                .getAllBookingsForUserOrOwnerByUserIdAndState(1L,
+                .getAllBookingsByUser(1L,
                         "WAITING",
-                        UserType.USER,
-                        PageRequest.of(1,1));
+                        1,1);
         assertEquals(actualListOfBookings, expectedList);
+    }
+
+    @Test
+    void getAllBookingsByUserWhenPageRequestAsWrong() {
+        List<BookingDto> actualListOfBookings = new ArrayList<>();
+        actualListOfBookings.add(bookingDto);
+
+        lenient().when(bookingStorage.findAllByBookerIdAndStatus(1L, "WAITING", PageRequest.of(1,1)))
+                .thenReturn(List.of(booking));
+        lenient().when(bookingMapper.fromListToDtoList(any()))
+                .thenReturn(actualListOfBookings);
+
+        assertThrows(IllegalArgumentException.class,() -> bookingService
+                .getAllBookingsByUser(1L,
+                        "WAITING",
+                        -1,1));
     }
 
     @Test
@@ -133,11 +147,10 @@ class BookingServiceImplTest {
         List<BookingDto> actualListOfBookings = new ArrayList<>();
         actualListOfBookings.add(bookingDto);
 
-        when(bookingStorage.findAllByItemOwnerIdAndStatusOrderByStartDesc(1L,
+        when(bookingService.getAllBookingsForUserOrOwnerByUserIdAndState(1L,
                 "WAITING",
+                UserType.OWNER,
                 PageRequest.of(1,1)))
-                .thenReturn(List.of(booking));
-        when(bookingMapper.fromListToDtoList(any()))
                 .thenReturn(actualListOfBookings);
 
         List<BookingDto> expectedList = bookingService
