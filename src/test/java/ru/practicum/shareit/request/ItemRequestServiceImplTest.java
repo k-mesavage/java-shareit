@@ -5,6 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.mapper.RequestMapper;
@@ -58,12 +60,19 @@ class ItemRequestServiceImplTest {
     @Test
     void getAllItemRequestsByUser() {
         itemRequestService.getAllItemRequestsByUser(1L);
-        verify(itemRequestStorage, times(1)).findAllByRequesterIdOrderByCreatedDesc(anyLong());
+        verify(itemRequestStorage, times(1)).findAllByRequesterIdOrderByCreatedDesc(anyLong(), any());
     }
 
     @Test
     void getItemRequestById() {
         itemRequestService.getItemRequestById(1L, 1L);
         verify(itemRequestStorage, times(1)).getReferenceById(anyLong());
+    }
+
+    @Test
+    void getAllRequests() {
+        itemRequestService.getAllItemRequests(1L, 1, 1);
+        verify(itemRequestStorage, times(1)).findAll(PageRequest
+                .of(1, 1, Sort.by("created").descending()));
     }
 }
