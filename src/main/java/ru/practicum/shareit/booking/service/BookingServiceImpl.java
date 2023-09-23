@@ -79,24 +79,23 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllBookingsByUser(Long bookerId, String state, int from, int size) {
-        objectChecker.userFound(bookerId);
-        objectChecker.pageRequestLegal(from, size);
-        UserType userType = UserType.USER;
-        if (from < 0 || size < 0) {
-            throw new IllegalArgumentException("Page Request Exception");
+    public List<BookingDto> getAllBookingsByUser(UserType userType, Long bookerId, String state, int from, int size) {
+        if (userType.equals(UserType.USER)) {
+            objectChecker.userFound(bookerId);
+            objectChecker.pageRequestLegal(from, size);
+            if (from < 0 || size < 0) {
+                throw new IllegalArgumentException("Page Request Exception");
+            }
+            PageRequest pageRequest = PageRequest.of(from > 0 ? from / size : 0, size);
+            return getAllBookingsForUserOrOwnerByUserIdAndState(bookerId, state, userType, pageRequest);
         }
-        PageRequest pageRequest = PageRequest.of(from > 0 ? from / size : 0, size);
-        return getAllBookingsForUserOrOwnerByUserIdAndState(bookerId, state, userType, pageRequest);
-    }
-
-    @Override
-    public List<BookingDto> getAllItemsBookingByOwner(Long ownerId, String state, int from, int size) {
-        objectChecker.userFound(ownerId);
-        objectChecker.pageRequestLegal(from, size);
-        UserType userType = UserType.OWNER;
-        PageRequest pageRequest = PageRequest.of(from > 0 ? from / size : 0, size);
-        return getAllBookingsForUserOrOwnerByUserIdAndState(ownerId, state, userType, pageRequest);
+        if (userType.equals(UserType.OWNER)) {
+            objectChecker.userFound(bookerId);
+            objectChecker.pageRequestLegal(from, size);
+            PageRequest pageRequest = PageRequest.of(from > 0 ? from / size : 0, size);
+            return getAllBookingsForUserOrOwnerByUserIdAndState(bookerId, state, userType, pageRequest);
+        }
+        return null;
     }
 
     @Override

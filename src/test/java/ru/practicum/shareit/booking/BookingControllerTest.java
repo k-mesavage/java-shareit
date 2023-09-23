@@ -218,7 +218,7 @@ public class BookingControllerTest {
                 .item(shortItemDto)
                 .build();
 
-        when(bookingService.getAllBookingsByUser(anyLong(), anyString(), anyInt(), anyInt()))
+        when(bookingService.getAllBookingsByUser(any(), anyLong(), anyString(), anyInt(), anyInt()))
                 .thenReturn(List.of(bookingDto));
 
         mvc.perform(

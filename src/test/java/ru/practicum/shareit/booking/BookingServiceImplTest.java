@@ -134,7 +134,7 @@ class BookingServiceImplTest {
                 .thenReturn(actualListOfBookings);
 
         List<BookingDto> expectedList = bookingService
-                .getAllBookingsByUser(1L,
+                .getAllBookingsByUser(UserType.USER, 1L,
                         "WAITING",
                         1,1);
         assertEquals(actualListOfBookings, expectedList);
@@ -208,7 +208,7 @@ class BookingServiceImplTest {
                 .thenReturn(actualListOfBookings);
 
         assertThrows(IllegalArgumentException.class,() -> bookingService
-                .getAllBookingsByUser(1L,
+                .getAllBookingsByUser(UserType.USER, 1L,
                         "WAITING",
                         -1,1));
     }
@@ -233,25 +233,6 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllItemsBookingByOwner() {
-        List<BookingDto> actualListOfBookings = new ArrayList<>();
-        actualListOfBookings.add(bookingDto);
-
-        when(bookingService.getAllBookingsForUserOrOwnerByUserIdAndState(1L,
-                "ALL",
-                UserType.OWNER,
-                PageRequest.of(1,1)))
-                .thenReturn(actualListOfBookings);
-
-        List<BookingDto> expectedList = bookingService
-                .getAllBookingsForUserOrOwnerByUserIdAndState(1L,
-                        "ALL",
-                        UserType.OWNER,
-                        PageRequest.of(1, 1));
-        assertEquals(actualListOfBookings, expectedList);
-    }
-
-    @Test
     void getCurrentItemsBookingByOwner() {
         List<BookingDto> actualListOfBookings = new ArrayList<>();
         actualListOfBookings.add(bookingDto);
@@ -263,10 +244,9 @@ class BookingServiceImplTest {
                 .thenReturn(actualListOfBookings);
 
         List<BookingDto> expectedList = bookingService
-                .getAllBookingsForUserOrOwnerByUserIdAndState(1L,
+                .getAllBookingsByUser(UserType.OWNER, 1L,
                         "CURRENT",
-                        UserType.OWNER,
-                        PageRequest.of(1, 1));
+                        1, 1);
         assertEquals(actualListOfBookings, expectedList);
     }
 
@@ -337,4 +317,7 @@ class BookingServiceImplTest {
         assertEquals(bookingDto, expectedBooking);
     }
 
+    @Test
+    void getAllItemsBookingByOwner() {
+    }
 }
