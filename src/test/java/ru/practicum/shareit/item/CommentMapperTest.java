@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CommentMapperTest {
 
     @InjectMocks
-    CommentMapper commentMapper;
+    private CommentMapper commentMapper;
 
     private final User user = new User(1L, "User name", "email@mail.ru");
     private final Item item = Item.builder().id(1L).build();

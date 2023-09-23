@@ -25,13 +25,13 @@ import static org.mockito.Mockito.when;
 class ObjectCheckerTest {
 
     @Mock
-    BookingStorage bookingStorage;
+    private BookingStorage bookingStorage;
     @Mock
     private UserStorage userStorage;
     @Mock
     private ItemStorage itemStorage;
     @InjectMocks
-    ObjectChecker objectChecker;
+    private ObjectChecker objectChecker;
 
     @Test
     void userNotFound() {

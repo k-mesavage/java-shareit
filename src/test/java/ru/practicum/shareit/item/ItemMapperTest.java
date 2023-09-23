@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ItemMapperTest {
 
     @InjectMocks
-    ItemMapper itemMapper;
+    private ItemMapper itemMapper;
 
     private final Item actualItem = Item.builder()
             .id(1L)
