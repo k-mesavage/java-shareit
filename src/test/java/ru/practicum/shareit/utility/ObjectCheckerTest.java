@@ -91,12 +91,25 @@ class ObjectCheckerTest {
         WorkingBookingDto bookingDto = WorkingBookingDto.builder()
                 .start(LocalDateTime.now())
                 .end(LocalDateTime.now().plusHours(3)).build();
+        WorkingBookingDto booking1 = WorkingBookingDto.builder()
+                .start(LocalDateTime.of(1999, 12, 12, 1,1))
+                .end(LocalDateTime.of(1999, 12, 12, 1,1)).build();
 
         when(bookingStorage.findAllByItemId(1L))
                 .thenReturn(checkingBookings);
 
         assertThrows(BadRequestException.class,
                 () -> objectChecker.checkBookingDate(bookingDto, 1L));
+        assertThrows(BadRequestException.class,
+                () -> objectChecker.checkBookingDate(WorkingBookingDto.builder()
+                        .start(LocalDateTime.now())
+                        .end(LocalDateTime.now()).build(), 1L));
+        assertThrows(BadRequestException.class,
+                () -> objectChecker.checkBookingDate(WorkingBookingDto.builder()
+                        .start(LocalDateTime.now())
+                        .end(LocalDateTime.now().minusDays(1)).build(), 1L));
+        assertThrows(BadRequestException.class,
+                () -> objectChecker.checkBookingDate(booking1, 1L));
     }
 
     @Test
@@ -104,19 +117,14 @@ class ObjectCheckerTest {
         WorkingBookingDto booking = WorkingBookingDto.builder()
                 .start(LocalDateTime.now().minusDays(1))
                 .end(LocalDateTime.now().plusDays(1)).build();
-        WorkingBookingDto booking2 = WorkingBookingDto.builder()
-                .start(LocalDateTime.now().plusHours(1))
-                .end(LocalDateTime.now().minusDays(1)).build();
-        WorkingBookingDto booking3 = WorkingBookingDto.builder()
+        WorkingBookingDto booking1 = WorkingBookingDto.builder()
                 .start(LocalDateTime.now())
                 .end(LocalDateTime.now()).build();
 
         assertThrows(BadRequestException.class,
                 () -> objectChecker.checkDateTime(booking));
         assertThrows(BadRequestException.class,
-                () -> objectChecker.checkDateTime(booking2));
-        assertThrows(BadRequestException.class,
-                () -> objectChecker.checkDateTime(booking3));
+                () -> objectChecker.checkDateTime(booking1));
     }
 
     @Test

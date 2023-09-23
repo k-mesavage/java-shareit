@@ -13,6 +13,7 @@ import ru.practicum.shareit.booking.dto.WorkingBookingDto;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
+import ru.practicum.shareit.exception.UnsupportedStatusException;
 import ru.practicum.shareit.item.dto.ShortItemDto;
 import ru.practicum.shareit.user.dto.ShortUserDto;
 import ru.practicum.shareit.user.model.User;
@@ -101,6 +102,29 @@ public class BookingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void shouldCreateNewBookingWhenUnsupportedStatus() {
+        LocalDateTime start = LocalDateTime.now().plusSeconds(1);
+        LocalDateTime end = LocalDateTime.now().plusDays(1);
+        WorkingBookingDto request = WorkingBookingDto.builder()
+                .start(start)
+                .end(end)
+                .itemId(1L)
+                .build();
+
+        when(bookingService.addBooking(anyLong(), any()))
+                .thenThrow(new UnsupportedStatusException("Unsupported status"));
+
+        mvc.perform(post("/bookings")
+                        .content(mapper.writeValueAsString(request))
+                        .header(HEADER, 1L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
     }
 
     @Test

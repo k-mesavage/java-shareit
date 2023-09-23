@@ -83,8 +83,7 @@ public class ObjectChecker {
     public void checkDateTime(WorkingBookingDto workingBookingDto) {
         if (workingBookingDto.getStart().isBefore(LocalDateTime.now()) ||
                 workingBookingDto.getEnd().isBefore(LocalDateTime.now()) ||
-                workingBookingDto.getEnd().isBefore(workingBookingDto.getStart()) ||
-                workingBookingDto.getEnd().equals(workingBookingDto.getStart())) {
+                workingBookingDto.getEnd().isBefore(workingBookingDto.getStart())) {
             throw new BadRequestException("Check Date Exception");
         }
     }

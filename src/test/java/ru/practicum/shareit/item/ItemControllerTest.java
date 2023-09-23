@@ -29,8 +29,6 @@ class ItemControllerTest {
     @Autowired
     private ObjectMapper mapper;
     @MockBean
-    private ItemController itemController;
-    @MockBean
     private ItemService itemService;
 
     private static final String HEADER = "X-Sharer-User-Id";
@@ -49,7 +47,7 @@ class ItemControllerTest {
 
     @Test
     void getItemInformation() throws Exception {
-        when(itemController.getItemInformation(anyLong(), anyLong()))
+        when(itemService.getItemById(anyLong(), anyLong()))
                 .thenReturn(actualItemDto);
 
         mvc.perform(get("/items/{itemId}", 1L)
@@ -63,7 +61,7 @@ class ItemControllerTest {
 
     @Test
     void getOwnerItems() throws Exception {
-        when(itemController.getOwnerItems(anyLong()))
+        when(itemService.getAllItemsByUserId(anyLong()))
                 .thenReturn(actualItemList);
 
         mvc.perform(get("/items")
@@ -77,7 +75,7 @@ class ItemControllerTest {
 
     @Test
     void searchItems() throws Exception {
-        when(itemController.searchItems(anyString()))
+        when(itemService.searchItems(anyString()))
                 .thenReturn(actualItemList);
 
         mvc.perform(get("/items/search")
@@ -90,7 +88,7 @@ class ItemControllerTest {
 
     @Test
     void addItem() throws Exception {
-        when(itemController.addItem(anyLong(), any()))
+        when(itemService.addItem(anyLong(), any()))
                 .thenReturn(actualItemDto);
 
         mvc.perform(post("/items")
@@ -105,7 +103,7 @@ class ItemControllerTest {
 
     @Test
     void updateItem() throws Exception {
-        when(itemController.updateItem(anyLong(), anyLong(), any()))
+        when(itemService.updateItem(anyLong(), anyLong(), any()))
                 .thenReturn(actualItemDto);
 
         mvc.perform(patch("/items/{itemId}", 1L)
@@ -130,7 +128,7 @@ class ItemControllerTest {
 
     @Test
     void addComment() throws Exception {
-        when(itemController.addComment(anyLong(), anyLong(), any()))
+        when(itemService.addComment(anyLong(), anyLong(), any()))
                 .thenReturn(actualCommentDto);
 
         mvc.perform(post("/items/{itemId}/comment", 1L)
