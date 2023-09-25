@@ -1,7 +1,6 @@
 package ru.practicum.shareit.request.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -12,7 +11,6 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.storage.ItemRequestStorage;
 import ru.practicum.shareit.utility.ObjectChecker;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,18 +41,13 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDto> getAllItemRequests(Long userId, int from, int size) {
-        List<ItemRequest> allItemRequests = new ArrayList<>();
-        Page<ItemRequest> requestPage = itemRequestStorage.findAll(PageRequest
-                .of(from, size, Sort.by("created").descending()));
-        if (requestPage != null) {
-            requestPage.forEach(allItemRequests::add);
-        }
-        List<ItemRequestDto> finalListOfRequests = requestMapper.fromListToItemRequestList(allItemRequests);
-        finalListOfRequests = finalListOfRequests.stream()
-                .filter(i -> !i.getRequesterId().equals(userId))
-                .collect(Collectors.toList());
-        finalListOfRequests.forEach(requestMapper::addItemsToRequest);
-        return finalListOfRequests;
+        List<ItemRequestDto> allItemRequests = itemRequestStorage.getAll(PageRequest
+                .of(from, size, Sort.by("created").descending())).stream()
+                        .map(requestMapper::toItemRequestDto)
+                                .filter(i -> !i.getRequesterId().equals(userId))
+                                        .collect(Collectors.toList());
+        allItemRequests.forEach(requestMapper::addItemsToRequest);
+        return allItemRequests;
     }
 
     @Override

@@ -53,8 +53,8 @@ public class BookingServiceImpl implements BookingService {
                 .start(workingBookingDto.getStart())
                 .end(workingBookingDto.getEnd())
                 .status(BookingState.WAITING.toString())
-                .itemId(workingBookingDto.getItemId())
-                .bookerId(bookerId)
+                .item(itemStorage.getReferenceById(workingBookingDto.getItemId()))
+                .booker(userStorage.getReferenceById(bookerId))
                 .build();
         newBooking = bookingStorage.save(newBooking);
         return bookingMapper.toDto(newBooking);
@@ -64,7 +64,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public BookingDto requestBooking(Boolean approved, Long bookingId, Long userId) {
         Booking booking = bookingStorage.getReferenceById(bookingId);
-        Item item = itemStorage.getReferenceById(booking.getItemId());
+        Item item = itemStorage.getReferenceById(booking.getItem().getId());
         User owner = userStorage.getReferenceById(item.getOwner().getId());
         objectChecker.userAccess(userId, owner.getId());
         if (approved) {
@@ -102,9 +102,9 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public BookingDto getBookingById(Long bookingId, Long userId) {
         Booking booking = bookingStorage.getReferenceById(bookingId);
-        Item item = itemStorage.getReferenceById(booking.getItemId());
+        Item item = booking.getItem();
         try {
-            objectChecker.userAccess(booking.getBookerId(), userId);
+            objectChecker.userAccess(booking.getBooker().getId(), userId);
         } catch (ObjectNotFoundException e) {
             objectChecker.userAccess(item.getOwner().getId(), userId);
         }

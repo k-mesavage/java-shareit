@@ -41,16 +41,16 @@ class BookingMapperTest {
     @InjectMocks
     private BookingMapper bookingMapper;
 
+    private final Item item = Item.builder()
+            .id(1L).build();
+    private final User user = new User(1L, "Name", "email@mail.com");
     private final Booking booking = Booking.builder()
             .id(1L)
             .start(LocalDateTime.now())
             .end(LocalDateTime.now().plusHours(1))
-            .itemId(1L)
-            .bookerId(1L)
+            .item(item)
+            .booker(user)
             .status("WAITING").build();
-    private final Item item = Item.builder()
-            .id(1L).build();
-    private final User user = new User(1L, "Name", "email@mail.com");
 
     @Test
     void toDto() {
@@ -90,7 +90,7 @@ class BookingMapperTest {
         ShortBookingDto expectedBooking = bookingMapper.toShortBookingDto(booking);
 
         assertEquals(expectedBooking.getId(), booking.getId());
-        assertEquals(expectedBooking.getBookerId(), booking.getBookerId());
+        assertEquals(expectedBooking.getBookerId(), booking.getBooker().getId());
     }
 
     @Test
@@ -109,6 +109,6 @@ class BookingMapperTest {
 
         ItemDto expectedItem = bookingMapper.addShortBooking(actualItem);
         assertEquals(expectedItem.getLastBooking().getId(), booking.getId());
-        assertEquals(expectedItem.getNextBooking().getBookerId(), booking.getBookerId());
+        assertEquals(expectedItem.getNextBooking().getBookerId(), booking.getBooker().getId());
     }
 }

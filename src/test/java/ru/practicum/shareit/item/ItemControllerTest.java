@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.utility.HttpHeader;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -31,7 +32,7 @@ class ItemControllerTest {
     @MockBean
     private ItemService itemService;
 
-    private static final String HEADER = "X-Sharer-User-Id";
+    private static final String HEADER = HttpHeader.X_SHARER_USER_ID;
     private static final ItemDto actualItemDto = ItemDto.builder()
             .id(1L)
             .name("Item")
@@ -61,7 +62,7 @@ class ItemControllerTest {
 
     @Test
     void getOwnerItems() throws Exception {
-        when(itemService.getAllItemsByUserId(anyLong()))
+        when(itemService.getAllItemsByUserId(anyLong(), anyInt(), anyInt()))
                 .thenReturn(actualItemList);
 
         mvc.perform(get("/items")

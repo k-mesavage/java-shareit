@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
+import ru.practicum.shareit.utility.HttpHeader;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -33,7 +34,7 @@ class ItemRequestControllerTest {
     @MockBean
     private ItemRequestService itemRequestService;
 
-    private static final String HEADER = "X-Sharer-User-Id";
+    private static final String HEADER = HttpHeader.X_SHARER_USER_ID;
     private static final ItemRequestDto actualItemRequestDto = ItemRequestDto.builder()
             .id(1L)
             .description("Actual request")

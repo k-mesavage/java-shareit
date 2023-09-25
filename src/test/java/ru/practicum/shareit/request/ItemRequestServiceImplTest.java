@@ -72,7 +72,7 @@ class ItemRequestServiceImplTest {
     @Test
     void getAllRequests() {
         itemRequestService.getAllItemRequests(1L, 1, 1);
-        verify(itemRequestStorage, times(1)).findAll(PageRequest
+        verify(itemRequestStorage, times(1)).getAll(PageRequest
                 .of(1, 1, Sort.by("created").descending()));
     }
 }

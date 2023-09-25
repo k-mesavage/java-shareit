@@ -17,6 +17,7 @@ import ru.practicum.shareit.exception.UnsupportedStatusException;
 import ru.practicum.shareit.item.dto.ShortItemDto;
 import ru.practicum.shareit.user.dto.ShortUserDto;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.utility.HttpHeader;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -40,7 +41,7 @@ public class BookingControllerTest {
     @MockBean
     private BookingService bookingService;
 
-    private static final String HEADER = "X-Sharer-User-Id";
+    private static final String HEADER = HttpHeader.X_SHARER_USER_ID;
     private final ShortUserDto shortUserDto1 = new ShortUserDto(1L);
     private final User user1 = new User(1L, "Joe", "joe@email.com");
     private final ShortItemDto shortItemDto = ShortItemDto.builder()

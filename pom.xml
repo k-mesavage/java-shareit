@@ -63,6 +63,61 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>io.openliberty.features</groupId>
+            <artifactId>mpConfig-3.0</artifactId>
+            <version>23.0.0.6</version>
+        </dependency>
+		<dependency>
+			<groupId>io.openliberty.features</groupId>
+			<artifactId>mpConfig-3.0</artifactId>
+			<version>23.0.0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>io.openliberty.features</groupId>
+			<artifactId>mpConfig-3.0</artifactId>
+			<version>23.0.0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>io.openliberty.features</groupId>
+			<artifactId>mpConfig-3.0</artifactId>
+			<version>23.0.0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>io.openliberty.features</groupId>
+			<artifactId>mpConfig-3.0</artifactId>
+			<version>23.0.0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>io.openliberty.features</groupId>
+			<artifactId>mpConfig-3.0</artifactId>
+			<version>23.0.0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>io.openliberty.features</groupId>
+			<artifactId>mpConfig-3.0</artifactId>
+			<version>23.0.0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>io.openliberty.features</groupId>
+			<artifactId>mpConfig-1.4</artifactId>
+			<version>23.0.0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>io.openliberty.features</groupId>
+			<artifactId>mpConfig-1.4</artifactId>
+			<version>23.0.0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>io.openliberty.features</groupId>
+			<artifactId>mpConfig-1.4</artifactId>
+			<version>23.0.0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>io.openliberty.features</groupId>
+			<artifactId>mpConfig-1.4</artifactId>
+			<version>23.0.0.6</version>
+		</dependency>
 	</dependencies>
 
 	<build>

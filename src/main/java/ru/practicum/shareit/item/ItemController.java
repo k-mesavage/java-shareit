@@ -32,9 +32,11 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getOwnerItems(@RequestHeader(X_SHARER_USER_ID) Long userId) {
+    public List<ItemDto> getOwnerItems(@RequestHeader(X_SHARER_USER_ID) Long userId,
+                                       @RequestParam(defaultValue = "0") int from,
+                                       @RequestParam(defaultValue = "10") int size) {
         log.info("Начало обработки запроса на получение списка вещей пользователя {}", userId);
-        List<ItemDto> ownerItems = itemService.getAllItemsByUserId(userId);
+        List<ItemDto> ownerItems = itemService.getAllItemsByUserId(userId, from, size);
         log.info("Окончание обработки запроса на получение списка вещей пользователя {}", userId);
         return ownerItems;
     }

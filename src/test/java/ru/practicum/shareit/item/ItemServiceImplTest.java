@@ -107,14 +107,14 @@ class ItemServiceImplTest {
 
     @Test
     void getAllItemsByUserId() {
-        when(itemStorage.findAllByOwnerId(anyLong()))
+        when(itemStorage.findAllByOwnerId(anyLong(), any()))
                 .thenReturn(List.of(actualItem));
         when(itemMapper.toItemDto(any()))
                 .thenReturn(actualItemDto);
         when(bookingMapper.addShortBooking(any()))
                 .thenReturn(actualItemDto);
 
-        List<ItemDto> expectedItems = itemService.getAllItemsByUserId(1L);
+        List<ItemDto> expectedItems = itemService.getAllItemsByUserId(1L, 1, 10);
         assertEquals(expectedItems.size(), 1);
         assertEquals(expectedItems.get(0), actualItemDto);
     }

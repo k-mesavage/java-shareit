@@ -1,9 +1,11 @@
 package ru.practicum.shareit.booking;
 
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.storage.BookingStorage;
@@ -17,42 +19,57 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@Slf4j
+@DataJpaTest
 class BookingStorageTest {
 
     @Autowired
-    private BookingStorage bookingStorage;
+    BookingStorage bookingStorage;
     @Autowired
-    private ItemStorage itemStorage;
+    ItemStorage itemStorage;
     @Autowired
-    private UserStorage userStorage;
+    UserStorage userStorage;
+
+    User user;
+    Item item;
+    Booking booking;
+    Booking booking2;
+    Booking booking3;
 
     @BeforeEach
     void beforeEach() {
-        bookingStorage.deleteAll();
-        final User user = userStorage.save(new User(1L, "name", "user@email.com"));
-        final Item item = itemStorage.save(Item.builder().id(1L).owner(user).build());
-        final Booking booking = bookingStorage.save(Booking.builder().id(1L)
+        user = userStorage.save(new User(1L, "name", "user@email.com"));
+        log.warn("1");
+        item = itemStorage.save(Item.builder().id(1L).name("item name").description("desc").available(true).owner(user).build());
+        log.warn("2");
+        booking = bookingStorage.save(Booking.builder().id(1L)
                 .start(LocalDateTime.now())
                 .end(LocalDateTime.now().plusHours(1))
-                .bookerId(1L)
+                .booker(user)
                 .status("APPROVED")
-                .itemId(1L)
+                .item(item)
                 .build());
-        final Booking booking2 = bookingStorage.save(Booking.builder()
-                .bookerId(1L)
+        booking2 = bookingStorage.save(Booking.builder().id(2L)
+                .booker(user)
                 .start(LocalDateTime.now().plusDays(1))
                 .end(LocalDateTime.now().plusDays(2))
-                .itemId(1L)
+                .item(item)
                 .status("APPROVED")
                 .build());
-        final Booking booking3 = bookingStorage.save(Booking.builder()
-                .bookerId(1L)
+        booking3 = bookingStorage.save(Booking.builder().id(3L)
+                .booker(user)
                 .start(LocalDateTime.now().plusDays(2))
                 .end(LocalDateTime.now().plusDays(3))
-                .itemId(1L)
+                .item(item)
                 .status("REJECTED")
                 .build());
+    }
+
+    @AfterEach
+    void afterEach() {
+        bookingStorage.deleteAll();
+        userStorage.deleteAll();
+        itemStorage.deleteAll();
     }
 
     @Test

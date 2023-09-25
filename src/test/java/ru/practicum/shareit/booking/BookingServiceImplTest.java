@@ -63,8 +63,8 @@ class BookingServiceImplTest {
     private final Booking booking = Booking.builder()
             .id(1L)
             .status("APPROVED")
-            .bookerId(1L)
-            .itemId(1L)
+            .booker(user)
+            .item(item)
             .start(start)
             .end(end)
             .build();
@@ -315,9 +315,5 @@ class BookingServiceImplTest {
 
         BookingDto expectedBooking = bookingService.getBookingById(1L, 1L);
         assertEquals(bookingDto, expectedBooking);
-    }
-
-    @Test
-    void getAllItemsBookingByOwner() {
     }
 }
