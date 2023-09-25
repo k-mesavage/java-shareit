@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,24 +23,27 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class BookingStorageTest {
 
     @Autowired
-    BookingStorage bookingStorage;
+    private BookingStorage bookingStorage;
     @Autowired
-    ItemStorage itemStorage;
+    private ItemStorage itemStorage;
     @Autowired
-    UserStorage userStorage;
+    private UserStorage userStorage;
 
-    User user;
-    Item item;
-    Booking booking;
-    Booking booking2;
-    Booking booking3;
+    private User user;
+    private Item item;
+    private Booking booking;
+    private Booking booking2;
+    private Booking booking3;
 
     @BeforeEach
     void beforeEach() {
+        log.warn("add user");
         user = userStorage.save(new User(1L, "name", "user@email.com"));
-        log.warn("1");
+        log.warn("adduser");
+        log.warn("additem");
         item = itemStorage.save(Item.builder().id(1L).name("item name").description("desc").available(true).owner(user).build());
-        log.warn("2");
+        log.warn("additem");
+        log.warn("addbooking");
         booking = bookingStorage.save(Booking.builder().id(1L)
                 .start(LocalDateTime.now())
                 .end(LocalDateTime.now().plusHours(1))
@@ -49,6 +51,8 @@ class BookingStorageTest {
                 .status("APPROVED")
                 .item(item)
                 .build());
+        log.warn("addbooking");
+        log.warn("addbooking");
         booking2 = bookingStorage.save(Booking.builder().id(2L)
                 .booker(user)
                 .start(LocalDateTime.now().plusDays(1))
@@ -56,6 +60,8 @@ class BookingStorageTest {
                 .item(item)
                 .status("APPROVED")
                 .build());
+        log.warn("addbooking");
+        log.warn("addbooking");
         booking3 = bookingStorage.save(Booking.builder().id(3L)
                 .booker(user)
                 .start(LocalDateTime.now().plusDays(2))
@@ -63,13 +69,7 @@ class BookingStorageTest {
                 .item(item)
                 .status("REJECTED")
                 .build());
-    }
-
-    @AfterEach
-    void afterEach() {
-        bookingStorage.deleteAll();
-        userStorage.deleteAll();
-        itemStorage.deleteAll();
+        log.warn("addbooking");
     }
 
     @Test

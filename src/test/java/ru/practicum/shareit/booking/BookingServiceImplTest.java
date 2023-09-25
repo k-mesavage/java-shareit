@@ -310,7 +310,6 @@ class BookingServiceImplTest {
     @Test
     void getBookingById() {
         when(bookingStorage.getReferenceById(1L)).thenReturn(booking);
-        when(itemStorage.getReferenceById(1L)).thenReturn(item);
         when(bookingMapper.toDto(booking)).thenReturn(bookingDto);
 
         BookingDto expectedBooking = bookingService.getBookingById(1L, 1L);

@@ -54,11 +54,6 @@ class BookingMapperTest {
 
     @Test
     void toDto() {
-        when(itemStorage.getReferenceById(anyLong()))
-                .thenReturn(item);
-        when(userStorage.getReferenceById(anyLong()))
-                .thenReturn(user);
-
         BookingDto expectedBooking = bookingMapper.toDto(booking);
         assertEquals(expectedBooking.getId(), 1L);
         assertEquals(expectedBooking.getStart(), booking.getStart());
@@ -72,11 +67,6 @@ class BookingMapperTest {
                 .status("APPROVED")
                 .build());
         List<Booking> bookings = List.of(booking);
-
-        when(itemStorage.getReferenceById(anyLong()))
-                .thenReturn(item);
-        when(userStorage.getReferenceById(anyLong()))
-                .thenReturn(user);
 
         List<BookingDto> expectedList = bookingMapper.fromListToDtoList(bookings);
         assertEquals(actualBookings.size(), expectedList.size());
