@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -82,237 +83,246 @@ class BookingServiceImplTest {
             .itemId(1L)
             .build();
 
-    @Test
-    void shouldAddBooking() {
-        when(itemStorage.getReferenceById(anyLong()))
-                .thenReturn(item);
-        when(bookingMapper.toDto(any()))
-                .thenReturn(bookingDto);
+    @Nested
+    class createTests {
+        @Test
+        void shouldAddBooking() {
+            when(itemStorage.getReferenceById(anyLong()))
+                    .thenReturn(item);
+            when(bookingMapper.toDto(any()))
+                    .thenReturn(bookingDto);
 
-        BookingDto expectedBooking = bookingService.addBooking(1L, request);
+            BookingDto expectedBooking = bookingService.addBooking(1L, request);
 
-        assertEquals(expectedBooking, bookingDto);
-        verify(bookingStorage).save(any());
+            assertEquals(expectedBooking, bookingDto);
+            verify(bookingStorage).save(any());
+        }
     }
 
-    @Test
-    void shouldRequestBooking() {
-        when(bookingStorage.getReferenceById(anyLong()))
-                .thenReturn(booking);
-        when(itemStorage.getReferenceById(anyLong()))
-                .thenReturn(item);
-        when(userStorage.getReferenceById(anyLong()))
-                .thenReturn(user);
-        when(bookingMapper.toDto(booking)).thenReturn(bookingDto);
-        BookingDto expectedBooking = bookingService.requestBooking(true, 1L, 1L);
-        assertEquals(bookingDto, expectedBooking);
-        verify(bookingStorage).save(any());
+    @Nested
+    class requestTests {
+        @Test
+        void shouldRequestBooking() {
+            when(bookingStorage.getReferenceById(anyLong()))
+                    .thenReturn(booking);
+            when(itemStorage.getReferenceById(anyLong()))
+                    .thenReturn(item);
+            when(userStorage.getReferenceById(anyLong()))
+                    .thenReturn(user);
+            when(bookingMapper.toDto(booking)).thenReturn(bookingDto);
+            BookingDto expectedBooking = bookingService.requestBooking(true, 1L, 1L);
+            assertEquals(bookingDto, expectedBooking);
+            verify(bookingStorage).save(any());
+        }
+
+        @Test
+        void shouldRejectBooking() {
+            when(bookingStorage.getReferenceById(anyLong()))
+                    .thenReturn(booking);
+            when(itemStorage.getReferenceById(anyLong()))
+                    .thenReturn(item);
+            when(userStorage.getReferenceById(anyLong()))
+                    .thenReturn(user);
+            when(bookingMapper.toDto(booking)).thenReturn(bookingDto);
+            BookingDto expectedBooking = bookingService.requestBooking(false, 1L, 1L);
+            assertEquals(bookingDto, expectedBooking);
+            verify(bookingStorage).save(any());
+        }
     }
 
-    @Test
-    void shouldRejectBooking() {
-        when(bookingStorage.getReferenceById(anyLong()))
-                .thenReturn(booking);
-        when(itemStorage.getReferenceById(anyLong()))
-                .thenReturn(item);
-        when(userStorage.getReferenceById(anyLong()))
-                .thenReturn(user);
-        when(bookingMapper.toDto(booking)).thenReturn(bookingDto);
-        BookingDto expectedBooking = bookingService.requestBooking(false, 1L, 1L);
-        assertEquals(bookingDto, expectedBooking);
-        verify(bookingStorage).save(any());
-    }
+    @Nested
+    class getTest {
+        @Test
+        void getAllWaitingBookingsByUser() {
+            List<BookingDto> actualListOfBookings = new ArrayList<>();
+            actualListOfBookings.add(bookingDto);
 
-    @Test
-    void getAllWaitingBookingsByUser() {
-        List<BookingDto> actualListOfBookings = new ArrayList<>();
-        actualListOfBookings.add(bookingDto);
+            when(bookingStorage.findAllByBookerIdAndStatus(1L, "WAITING", PageRequest.of(1,1)))
+                    .thenReturn(List.of(booking));
+            when(bookingMapper.fromListToDtoList(any()))
+                    .thenReturn(actualListOfBookings);
 
-        when(bookingStorage.findAllByBookerIdAndStatus(1L, "WAITING", PageRequest.of(1,1)))
-                .thenReturn(List.of(booking));
-        when(bookingMapper.fromListToDtoList(any()))
-                .thenReturn(actualListOfBookings);
+            List<BookingDto> expectedList = bookingService
+                    .getAllBookingsByUser(UserType.USER, 1L,
+                            "WAITING",
+                            1,1);
+            assertEquals(actualListOfBookings, expectedList);
+        }
 
-        List<BookingDto> expectedList = bookingService
-                .getAllBookingsByUser(UserType.USER, 1L,
-                        "WAITING",
-                        1,1);
-        assertEquals(actualListOfBookings, expectedList);
-    }
+        @Test
+        void getCurrentBookingsByUser() {
+            List<BookingDto> actualListOfBookings = new ArrayList<>();
+            actualListOfBookings.add(bookingDto);
 
-    @Test
-    void getCurrentBookingsByUser() {
-        List<BookingDto> actualListOfBookings = new ArrayList<>();
-        actualListOfBookings.add(bookingDto);
+            when(bookingService.getAllBookingsForUserOrOwnerByUserIdAndState(1L,
+                    "CURRENT",
+                    UserType.USER,
+                    PageRequest.of(1,1)))
+                    .thenReturn(actualListOfBookings);
 
-        when(bookingService.getAllBookingsForUserOrOwnerByUserIdAndState(1L,
-                "CURRENT",
-                UserType.USER,
-                PageRequest.of(1,1)))
-                .thenReturn(actualListOfBookings);
+            List<BookingDto> expectedList = bookingService
+                    .getAllBookingsForUserOrOwnerByUserIdAndState(1L,
+                            "CURRENT",
+                            UserType.USER,
+                            PageRequest.of(1, 1));
+            assertEquals(actualListOfBookings, expectedList);
+        }
 
-        List<BookingDto> expectedList = bookingService
-                .getAllBookingsForUserOrOwnerByUserIdAndState(1L,
-                        "CURRENT",
-                        UserType.USER,
-                        PageRequest.of(1, 1));
-        assertEquals(actualListOfBookings, expectedList);
-    }
+        @Test
+        void getPastBookingsByUser() {
+            List<BookingDto> actualListOfBookings = new ArrayList<>();
+            actualListOfBookings.add(bookingDto);
 
-    @Test
-    void getPastBookingsByUser() {
-        List<BookingDto> actualListOfBookings = new ArrayList<>();
-        actualListOfBookings.add(bookingDto);
+            when(bookingService.getAllBookingsForUserOrOwnerByUserIdAndState(1L,
+                    "PAST",
+                    UserType.USER,
+                    PageRequest.of(1,1)))
+                    .thenReturn(actualListOfBookings);
 
-        when(bookingService.getAllBookingsForUserOrOwnerByUserIdAndState(1L,
-                "PAST",
-                UserType.USER,
-                PageRequest.of(1,1)))
-                .thenReturn(actualListOfBookings);
+            List<BookingDto> expectedList = bookingService
+                    .getAllBookingsForUserOrOwnerByUserIdAndState(1L,
+                            "PAST",
+                            UserType.USER,
+                            PageRequest.of(1, 1));
+            assertEquals(actualListOfBookings, expectedList);
+        }
 
-        List<BookingDto> expectedList = bookingService
-                .getAllBookingsForUserOrOwnerByUserIdAndState(1L,
-                        "PAST",
-                        UserType.USER,
-                        PageRequest.of(1, 1));
-        assertEquals(actualListOfBookings, expectedList);
-    }
+        @Test
+        void getFutureBookingsByUser() {
+            List<BookingDto> actualListOfBookings = new ArrayList<>();
+            actualListOfBookings.add(bookingDto);
 
-    @Test
-    void getFutureBookingsByUser() {
-        List<BookingDto> actualListOfBookings = new ArrayList<>();
-        actualListOfBookings.add(bookingDto);
+            when(bookingService.getAllBookingsForUserOrOwnerByUserIdAndState(1L,
+                    "FUTURE",
+                    UserType.USER,
+                    PageRequest.of(1,1)))
+                    .thenReturn(actualListOfBookings);
 
-        when(bookingService.getAllBookingsForUserOrOwnerByUserIdAndState(1L,
-                "FUTURE",
-                UserType.USER,
-                PageRequest.of(1,1)))
-                .thenReturn(actualListOfBookings);
+            List<BookingDto> expectedList = bookingService
+                    .getAllBookingsForUserOrOwnerByUserIdAndState(1L,
+                            "FUTURE",
+                            UserType.USER,
+                            PageRequest.of(1, 1));
+            assertEquals(actualListOfBookings, expectedList);
+        }
 
-        List<BookingDto> expectedList = bookingService
-                .getAllBookingsForUserOrOwnerByUserIdAndState(1L,
-                        "FUTURE",
-                        UserType.USER,
-                        PageRequest.of(1, 1));
-        assertEquals(actualListOfBookings, expectedList);
-    }
+        @Test
+        void getAllBookingsByUserWhenPageRequestAsWrong() {
+            List<BookingDto> actualListOfBookings = new ArrayList<>();
+            actualListOfBookings.add(bookingDto);
 
-    @Test
-    void getAllBookingsByUserWhenPageRequestAsWrong() {
-        List<BookingDto> actualListOfBookings = new ArrayList<>();
-        actualListOfBookings.add(bookingDto);
+            lenient().when(bookingStorage.findAllByBookerIdAndStatus(1L, "WAITING", PageRequest.of(1,1)))
+                    .thenReturn(List.of(booking));
+            lenient().when(bookingMapper.fromListToDtoList(any()))
+                    .thenReturn(actualListOfBookings);
 
-        lenient().when(bookingStorage.findAllByBookerIdAndStatus(1L, "WAITING", PageRequest.of(1,1)))
-                .thenReturn(List.of(booking));
-        lenient().when(bookingMapper.fromListToDtoList(any()))
-                .thenReturn(actualListOfBookings);
+            assertThrows(IllegalArgumentException.class,() -> bookingService
+                    .getAllBookingsByUser(UserType.USER, 1L,
+                            "WAITING",
+                            -1,1));
+        }
 
-        assertThrows(IllegalArgumentException.class,() -> bookingService
-                .getAllBookingsByUser(UserType.USER, 1L,
-                        "WAITING",
-                        -1,1));
-    }
+        @Test
+        void getAllWaitingItemsBookingByOwner() {
+            List<BookingDto> actualListOfBookings = new ArrayList<>();
+            actualListOfBookings.add(bookingDto);
 
-    @Test
-    void getAllWaitingItemsBookingByOwner() {
-        List<BookingDto> actualListOfBookings = new ArrayList<>();
-        actualListOfBookings.add(bookingDto);
+            when(bookingService.getAllBookingsForUserOrOwnerByUserIdAndState(1L,
+                    "WAITING",
+                    UserType.OWNER,
+                    PageRequest.of(1,1)))
+                    .thenReturn(actualListOfBookings);
 
-        when(bookingService.getAllBookingsForUserOrOwnerByUserIdAndState(1L,
-                "WAITING",
-                UserType.OWNER,
-                PageRequest.of(1,1)))
-                .thenReturn(actualListOfBookings);
+            List<BookingDto> expectedList = bookingService
+                    .getAllBookingsForUserOrOwnerByUserIdAndState(1L,
+                            "WAITING",
+                            UserType.OWNER,
+                            PageRequest.of(1, 1));
+            assertEquals(actualListOfBookings, expectedList);
+        }
 
-        List<BookingDto> expectedList = bookingService
-                .getAllBookingsForUserOrOwnerByUserIdAndState(1L,
-                        "WAITING",
-                        UserType.OWNER,
-                        PageRequest.of(1, 1));
-        assertEquals(actualListOfBookings, expectedList);
-    }
+        @Test
+        void getCurrentItemsBookingByOwner() {
+            List<BookingDto> actualListOfBookings = new ArrayList<>();
+            actualListOfBookings.add(bookingDto);
 
-    @Test
-    void getCurrentItemsBookingByOwner() {
-        List<BookingDto> actualListOfBookings = new ArrayList<>();
-        actualListOfBookings.add(bookingDto);
+            when(bookingService.getAllBookingsForUserOrOwnerByUserIdAndState(1L,
+                    "CURRENT",
+                    UserType.OWNER,
+                    PageRequest.of(1,1)))
+                    .thenReturn(actualListOfBookings);
 
-        when(bookingService.getAllBookingsForUserOrOwnerByUserIdAndState(1L,
-                "CURRENT",
-                UserType.OWNER,
-                PageRequest.of(1,1)))
-                .thenReturn(actualListOfBookings);
+            List<BookingDto> expectedList = bookingService
+                    .getAllBookingsByUser(UserType.OWNER, 1L,
+                            "CURRENT",
+                            1, 1);
+            assertEquals(actualListOfBookings, expectedList);
+        }
 
-        List<BookingDto> expectedList = bookingService
-                .getAllBookingsByUser(UserType.OWNER, 1L,
-                        "CURRENT",
-                        1, 1);
-        assertEquals(actualListOfBookings, expectedList);
-    }
+        @Test
+        void getPastItemsBookingByOwner() {
+            List<BookingDto> actualListOfBookings = new ArrayList<>();
+            actualListOfBookings.add(bookingDto);
 
-    @Test
-    void getPastItemsBookingByOwner() {
-        List<BookingDto> actualListOfBookings = new ArrayList<>();
-        actualListOfBookings.add(bookingDto);
+            when(bookingService.getAllBookingsForUserOrOwnerByUserIdAndState(1L,
+                    "PAST",
+                    UserType.OWNER,
+                    PageRequest.of(1,1)))
+                    .thenReturn(actualListOfBookings);
 
-        when(bookingService.getAllBookingsForUserOrOwnerByUserIdAndState(1L,
-                "PAST",
-                UserType.OWNER,
-                PageRequest.of(1,1)))
-                .thenReturn(actualListOfBookings);
+            List<BookingDto> expectedList = bookingService
+                    .getAllBookingsForUserOrOwnerByUserIdAndState(1L,
+                            "PAST",
+                            UserType.OWNER,
+                            PageRequest.of(1, 1));
+            assertEquals(actualListOfBookings, expectedList);
+        }
 
-        List<BookingDto> expectedList = bookingService
-                .getAllBookingsForUserOrOwnerByUserIdAndState(1L,
-                        "PAST",
-                        UserType.OWNER,
-                        PageRequest.of(1, 1));
-        assertEquals(actualListOfBookings, expectedList);
-    }
+        @Test
+        void getFutureItemsBookingByOwner() {
+            List<BookingDto> actualListOfBookings = new ArrayList<>();
+            actualListOfBookings.add(bookingDto);
 
-    @Test
-    void getFutureItemsBookingByOwner() {
-        List<BookingDto> actualListOfBookings = new ArrayList<>();
-        actualListOfBookings.add(bookingDto);
+            when(bookingService.getAllBookingsForUserOrOwnerByUserIdAndState(1L,
+                    "FUTURE",
+                    UserType.OWNER,
+                    PageRequest.of(1,1)))
+                    .thenReturn(actualListOfBookings);
 
-        when(bookingService.getAllBookingsForUserOrOwnerByUserIdAndState(1L,
-                "FUTURE",
-                UserType.OWNER,
-                PageRequest.of(1,1)))
-                .thenReturn(actualListOfBookings);
+            List<BookingDto> expectedList = bookingService
+                    .getAllBookingsForUserOrOwnerByUserIdAndState(1L,
+                            "FUTURE",
+                            UserType.OWNER,
+                            PageRequest.of(1, 1));
+            assertEquals(actualListOfBookings, expectedList);
+        }
 
-        List<BookingDto> expectedList = bookingService
-                .getAllBookingsForUserOrOwnerByUserIdAndState(1L,
-                        "FUTURE",
-                        UserType.OWNER,
-                        PageRequest.of(1, 1));
-        assertEquals(actualListOfBookings, expectedList);
-    }
+        @Test
+        void getRejectedItemsBookingByOwner() {
+            List<BookingDto> actualListOfBookings = new ArrayList<>();
+            actualListOfBookings.add(bookingDto);
 
-    @Test
-    void getRejectedItemsBookingByOwner() {
-        List<BookingDto> actualListOfBookings = new ArrayList<>();
-        actualListOfBookings.add(bookingDto);
+            when(bookingService.getAllBookingsForUserOrOwnerByUserIdAndState(1L,
+                    "REJECTED",
+                    UserType.OWNER,
+                    PageRequest.of(1,1)))
+                    .thenReturn(actualListOfBookings);
 
-        when(bookingService.getAllBookingsForUserOrOwnerByUserIdAndState(1L,
-                "REJECTED",
-                UserType.OWNER,
-                PageRequest.of(1,1)))
-                .thenReturn(actualListOfBookings);
+            List<BookingDto> expectedList = bookingService
+                    .getAllBookingsForUserOrOwnerByUserIdAndState(1L,
+                            "REJECTED",
+                            UserType.OWNER,
+                            PageRequest.of(1, 1));
+            assertEquals(actualListOfBookings, expectedList);
+        }
 
-        List<BookingDto> expectedList = bookingService
-                .getAllBookingsForUserOrOwnerByUserIdAndState(1L,
-                        "REJECTED",
-                        UserType.OWNER,
-                        PageRequest.of(1, 1));
-        assertEquals(actualListOfBookings, expectedList);
-    }
+        @Test
+        void getBookingById() {
+            when(bookingStorage.getReferenceById(1L)).thenReturn(booking);
+            when(bookingMapper.toDto(booking)).thenReturn(bookingDto);
 
-    @Test
-    void getBookingById() {
-        when(bookingStorage.getReferenceById(1L)).thenReturn(booking);
-        when(bookingMapper.toDto(booking)).thenReturn(bookingDto);
-
-        BookingDto expectedBooking = bookingService.getBookingById(1L, 1L);
-        assertEquals(bookingDto, expectedBooking);
+            BookingDto expectedBooking = bookingService.getBookingById(1L, 1L);
+            assertEquals(bookingDto, expectedBooking);
+        }
     }
 }

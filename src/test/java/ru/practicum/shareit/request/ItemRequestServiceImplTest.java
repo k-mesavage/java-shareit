@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -45,34 +46,40 @@ class ItemRequestServiceImplTest {
             .requesterId(1L)
             .build();
 
-    @Test
-    void addItemRequest() {
-        when(requestMapper.fromItemRequestDto(any()))
-                .thenReturn(actualItemRequest);
-        when(requestMapper.toItemRequestDto(any()))
-                .thenReturn(actualItemRequestDto);
+    @Nested
+    class createTests {
+        @Test
+        void addItemRequest() {
+            when(requestMapper.fromItemRequestDto(any()))
+                    .thenReturn(actualItemRequest);
+            when(requestMapper.toItemRequestDto(any()))
+                    .thenReturn(actualItemRequestDto);
 
-        ItemRequestDto expectedRequest = itemRequestService.addItemRequest(1L, actualItemRequestDto);
-        assertEquals(expectedRequest.getId(), actualItemRequestDto.getId());
-        verify(itemRequestStorage, times(1)).save(any());
+            ItemRequestDto expectedRequest = itemRequestService.addItemRequest(1L, actualItemRequestDto);
+            assertEquals(expectedRequest.getId(), actualItemRequestDto.getId());
+            verify(itemRequestStorage, times(1)).save(any());
+        }
     }
 
-    @Test
-    void getAllItemRequestsByUser() {
-        itemRequestService.getAllItemRequestsByUser(1L);
-        verify(itemRequestStorage, times(1)).findAllByRequesterIdOrderByCreatedDesc(anyLong(), any());
-    }
+    @Nested
+    class getTests {
+        @Test
+        void getAllItemRequestsByUser() {
+            itemRequestService.getAllItemRequestsByUser(1L);
+            verify(itemRequestStorage, times(1)).findAllByRequesterIdOrderByCreatedDesc(anyLong(), any());
+        }
 
-    @Test
-    void getItemRequestById() {
-        itemRequestService.getItemRequestById(1L, 1L);
-        verify(itemRequestStorage, times(1)).getReferenceById(anyLong());
-    }
+        @Test
+        void getItemRequestById() {
+            itemRequestService.getItemRequestById(1L, 1L);
+            verify(itemRequestStorage, times(1)).getReferenceById(anyLong());
+        }
 
-    @Test
-    void getAllRequests() {
-        itemRequestService.getAllItemRequests(1L, 1, 1);
-        verify(itemRequestStorage, times(1)).getAll(PageRequest
-                .of(1, 1, Sort.by("created").descending()));
+        @Test
+        void getAllRequests() {
+            itemRequestService.getAllItemRequests(1L, 1, 1);
+            verify(itemRequestStorage, times(1)).getAll(PageRequest
+                    .of(1, 1, Sort.by("created").descending()));
+        }
     }
 }

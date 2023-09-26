@@ -3,6 +3,7 @@ package ru.practicum.shareit.request;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -46,67 +47,73 @@ class ItemRequestControllerTest {
             .build();
     private static final List<ItemRequestDto> actualItems = List.of(actualItemRequestDto);
 
-    @Test
-    @SneakyThrows
-    void addNewRequest() {
-        when(itemRequestService.addItemRequest(anyLong(), any()))
-                .thenReturn(actualItemRequestDto);
+    @Nested
+    class createTests {
+        @Test
+        @SneakyThrows
+        void addNewRequest() {
+            when(itemRequestService.addItemRequest(anyLong(), any()))
+                    .thenReturn(actualItemRequestDto);
 
-        mvc.perform(post("/requests")
-                .header(HEADER, 1L)
-                .content(objectMapper.writeValueAsString(actualItemRequestDto))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", Matchers.is(actualItemRequestDto.getId()), Long.class));
+            mvc.perform(post("/requests")
+                            .header(HEADER, 1L)
+                            .content(objectMapper.writeValueAsString(actualItemRequestDto))
+                            .characterEncoding(StandardCharsets.UTF_8)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id", Matchers.is(actualItemRequestDto.getId()), Long.class));
+        }
     }
 
-    @Test
-    @SneakyThrows
-    void getRequestById() {
-        when(itemRequestService.getItemRequestById(anyLong(), anyLong()))
-                .thenReturn(actualItemRequestDto);
+    @Nested
+    class getTests {
+        @Test
+        @SneakyThrows
+        void getRequestById() {
+            when(itemRequestService.getItemRequestById(anyLong(), anyLong()))
+                    .thenReturn(actualItemRequestDto);
 
-        mvc.perform(get("/requests/{requestId}", 1L)
-                .header(HEADER, 1L)
-                        .content(objectMapper.writeValueAsString(actualItemRequestDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", Matchers.is(actualItemRequestDto.getId()), Long.class));
-    }
+            mvc.perform(get("/requests/{requestId}", 1L)
+                            .header(HEADER, 1L)
+                            .content(objectMapper.writeValueAsString(actualItemRequestDto))
+                            .characterEncoding(StandardCharsets.UTF_8)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id", Matchers.is(actualItemRequestDto.getId()), Long.class));
+        }
 
-    @Test
-    @SneakyThrows
-    void getAllUserRequests() {
-        when(itemRequestService.getAllItemRequestsByUser(anyLong()))
-                .thenReturn(actualItems);
+        @Test
+        @SneakyThrows
+        void getAllUserRequests() {
+            when(itemRequestService.getAllItemRequestsByUser(anyLong()))
+                    .thenReturn(actualItems);
 
-        mvc.perform(get("/requests")
-                .header(HEADER, 1L)
-                .content(objectMapper.writeValueAsString(actualItemRequestDto))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].id", Matchers.is(actualItemRequestDto.getId()), Long.class));
-    }
+            mvc.perform(get("/requests")
+                            .header(HEADER, 1L)
+                            .content(objectMapper.writeValueAsString(actualItemRequestDto))
+                            .characterEncoding(StandardCharsets.UTF_8)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.[0].id", Matchers.is(actualItemRequestDto.getId()), Long.class));
+        }
 
-    @Test
-    @SneakyThrows
-    void getAllRequests() {
-        when(itemRequestService.getAllItemRequests(anyLong(), anyInt(), anyInt()))
-                .thenReturn(actualItems);
+        @Test
+        @SneakyThrows
+        void getAllRequests() {
+            when(itemRequestService.getAllItemRequests(anyLong(), anyInt(), anyInt()))
+                    .thenReturn(actualItems);
 
-        mvc.perform(get("/requests/all")
-                        .header(HEADER, 1L)
-                        .content(objectMapper.writeValueAsString(actualItemRequestDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].id", Matchers.is(actualItemRequestDto.getId()), Long.class));
+            mvc.perform(get("/requests/all")
+                            .header(HEADER, 1L)
+                            .content(objectMapper.writeValueAsString(actualItemRequestDto))
+                            .characterEncoding(StandardCharsets.UTF_8)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.[0].id", Matchers.is(actualItemRequestDto.getId()), Long.class));
+        }
     }
 }

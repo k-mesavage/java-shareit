@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -64,98 +65,107 @@ class ItemServiceImplTest {
             .available(true)
             .build();
 
-    @Test
-    void addItem() {
-        lenient().when(itemMapper.fromItemDto(any()))
-                .thenReturn(actualItem);
-        lenient().when(userStorage.getReferenceById(anyLong()))
-                .thenReturn(actualUser);
-        lenient().when(itemMapper.toItemDto(any()))
-                .thenReturn(actualItemDto);
+    @Nested
+    class createTests {
+        @Test
+        void addItem() {
+            lenient().when(itemMapper.fromItemDto(any()))
+                    .thenReturn(actualItem);
+            lenient().when(userStorage.getReferenceById(anyLong()))
+                    .thenReturn(actualUser);
+            lenient().when(itemMapper.toItemDto(any()))
+                    .thenReturn(actualItemDto);
 
-        ItemDto expectedItem = itemService.addItem(1L, actualItemDto);
-        assertEquals(expectedItem.getId(), actualItem.getId());
-        assertEquals(expectedItem.getName(), "Item name");
-        verify(itemStorage).save(actualItem);
+            ItemDto expectedItem = itemService.addItem(1L, actualItemDto);
+            assertEquals(expectedItem.getId(), actualItem.getId());
+            assertEquals(expectedItem.getName(), "Item name");
+            verify(itemStorage).save(actualItem);
+        }
+
+        @Test
+        void updateItem() {
+            when(itemStorage.getReferenceById(anyLong()))
+                    .thenReturn(actualItem);
+            when(itemMapper.updateItem(any(), any()))
+                    .thenReturn(actualItem);
+            when(itemMapper.toItemDto(actualItem))
+                    .thenReturn(actualItemDto);
+
+            ItemDto expectedItem = itemService.updateItem(1L, 1L, actualItemDto);
+            assertEquals(expectedItem.getId(), actualItem.getId());
+            verify(itemStorage).save(actualItem);
+        }
+
+        @Test
+        void addComment() {
+            Comment actualComment = Comment.builder()
+                    .id(1L)
+                    .item(actualItem)
+                    .author(actualUser)
+                    .text("Text of comment")
+                    .build();
+            CommentDto actualCommentDto = CommentDto.builder()
+                    .text("Text of comment")
+                    .id(1L)
+                    .authorName(actualUser.getName())
+                    .build();
+            when(commentMapper.toComment(any(), any(), any(), any()))
+                    .thenReturn(actualComment);
+            when(commentMapper.toCommentDto(any()))
+                    .thenReturn(actualCommentDto);
+
+            CommentDto expectedCommentDto = itemService.addComment(1L, 1L, actualCommentDto);
+            assertEquals(expectedCommentDto.getText(), "Text of comment");
+            verify(commentStorage).save(actualComment);
+        }
     }
 
-    @Test
-    void updateItem() {
-        when(itemStorage.getReferenceById(anyLong()))
-                .thenReturn(actualItem);
-        when(itemMapper.updateItem(any(), any()))
-                .thenReturn(actualItem);
-        when(itemMapper.toItemDto(actualItem))
-                .thenReturn(actualItemDto);
+    @Nested
+    class getTests {
+        @Test
+        void getItemById() {
+            when(itemStorage.getReferenceById(anyLong()))
+                    .thenReturn(actualItem);
+            when(itemMapper.toItemDto(any()))
+                    .thenReturn(actualItemDto);
+            when(bookingMapper.addShortBooking(any()))
+                    .thenReturn(actualItemDto);
+            ItemDto expectedItem = itemService.getItemById(1L, 1L);
+            assertEquals(expectedItem.getId(), actualItem.getId());
+        }
 
-        ItemDto expectedItem = itemService.updateItem(1L, 1L, actualItemDto);
-        assertEquals(expectedItem.getId(), actualItem.getId());
-        verify(itemStorage).save(actualItem);
+        @Test
+        void getAllItemsByUserId() {
+            when(itemStorage.findAllByOwnerId(anyLong(), any()))
+                    .thenReturn(List.of(actualItem));
+            when(itemMapper.toItemDto(any()))
+                    .thenReturn(actualItemDto);
+            when(bookingMapper.addShortBooking(any()))
+                    .thenReturn(actualItemDto);
+
+            List<ItemDto> expectedItems = itemService.getAllItemsByUserId(1L, 1, 10);
+            assertEquals(expectedItems.size(), 1);
+            assertEquals(expectedItems.get(0), actualItemDto);
+        }
+
+        @Test
+        void searchItems() {
+            when(itemStorage.searchAvailableItems(anyString()))
+                    .thenReturn(List.of(actualItem));
+            when(itemMapper.toItemDto(any()))
+                    .thenReturn(actualItemDto);
+            List<ItemDto> expectedItems = itemService.searchItems("Some text");
+            assertEquals(expectedItems.size(), 1);
+            assertEquals(expectedItems.get(0).getId(), actualItem.getId());
+        }
     }
 
-    @Test
-    void getItemById() {
-        when(itemStorage.getReferenceById(anyLong()))
-                .thenReturn(actualItem);
-        when(itemMapper.toItemDto(any()))
-                .thenReturn(actualItemDto);
-        when(bookingMapper.addShortBooking(any()))
-                .thenReturn(actualItemDto);
-        ItemDto expectedItem = itemService.getItemById(1L, 1L);
-        assertEquals(expectedItem.getId(), actualItem.getId());
-    }
-
-    @Test
-    void getAllItemsByUserId() {
-        when(itemStorage.findAllByOwnerId(anyLong(), any()))
-                .thenReturn(List.of(actualItem));
-        when(itemMapper.toItemDto(any()))
-                .thenReturn(actualItemDto);
-        when(bookingMapper.addShortBooking(any()))
-                .thenReturn(actualItemDto);
-
-        List<ItemDto> expectedItems = itemService.getAllItemsByUserId(1L, 1, 10);
-        assertEquals(expectedItems.size(), 1);
-        assertEquals(expectedItems.get(0), actualItemDto);
-    }
-
-    @Test
-    void deleteItem() {
-        itemService.deleteItem(1L, 1L);
-        verify(itemStorage).deleteById(anyLong());
-    }
-
-    @Test
-    void searchItems() {
-        when(itemStorage.searchAvailableItems(anyString()))
-                .thenReturn(List.of(actualItem));
-        when(itemMapper.toItemDto(any()))
-                .thenReturn(actualItemDto);
-        List<ItemDto> expectedItems = itemService.searchItems("Some text");
-        assertEquals(expectedItems.size(), 1);
-        assertEquals(expectedItems.get(0).getId(), actualItem.getId());
-    }
-
-    @Test
-    void addComment() {
-        Comment actualComment = Comment.builder()
-                .id(1L)
-                .item(actualItem)
-                .author(actualUser)
-                .text("Text of comment")
-                .build();
-        CommentDto actualCommentDto = CommentDto.builder()
-                .text("Text of comment")
-                .id(1L)
-                .authorName(actualUser.getName())
-                .build();
-        when(commentMapper.toComment(any(), any(), any(), any()))
-                .thenReturn(actualComment);
-        when(commentMapper.toCommentDto(any()))
-                .thenReturn(actualCommentDto);
-
-        CommentDto expectedCommentDto = itemService.addComment(1L, 1L, actualCommentDto);
-        assertEquals(expectedCommentDto.getText(), "Text of comment");
-        verify(commentStorage).save(actualComment);
+    @Nested
+    class deleteTests {
+        @Test
+        void deleteItem() {
+            itemService.deleteItem(1L, 1L);
+            verify(itemStorage).deleteById(anyLong());
+        }
     }
 }

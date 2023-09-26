@@ -1,11 +1,11 @@
 package ru.practicum.shareit.booking;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.storage.BookingStorage;
 import ru.practicum.shareit.item.model.Item;
@@ -18,7 +18,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Slf4j
 @DataJpaTest
 class BookingStorageTest {
 
@@ -37,55 +36,63 @@ class BookingStorageTest {
 
     @BeforeEach
     void beforeEach() {
-        log.warn("add user");
-        user = userStorage.save(new User(1L, "name", "user@email.com"));
-        log.warn("adduser");
-        log.warn("additem");
-        item = itemStorage.save(Item.builder().id(1L).name("item name").description("desc").available(true).owner(user).build());
-        log.warn("additem");
-        log.warn("addbooking");
-        booking = bookingStorage.save(Booking.builder().id(1L)
+        user = User.builder().name("name").email("usersf@email.com").build();
+        item = Item.builder().name("item name").description("desc").available(true).owner(user).build();
+        booking = bookingStorage.save(Booking.builder()
                 .start(LocalDateTime.now())
                 .end(LocalDateTime.now().plusHours(1))
                 .booker(user)
                 .status("APPROVED")
                 .item(item)
                 .build());
-        log.warn("addbooking");
-        log.warn("addbooking");
-        booking2 = bookingStorage.save(Booking.builder().id(2L)
+        booking2 = Booking.builder()
                 .booker(user)
                 .start(LocalDateTime.now().plusDays(1))
                 .end(LocalDateTime.now().plusDays(2))
                 .item(item)
                 .status("APPROVED")
-                .build());
-        log.warn("addbooking");
-        log.warn("addbooking");
-        booking3 = bookingStorage.save(Booking.builder().id(3L)
+                .build();
+        booking3 = Booking.builder()
                 .booker(user)
                 .start(LocalDateTime.now().plusDays(2))
                 .end(LocalDateTime.now().plusDays(3))
                 .item(item)
                 .status("REJECTED")
-                .build());
-        log.warn("addbooking");
+                .build();
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void findAllByItemId() {
+        userStorage.save(user);
+        itemStorage.save(item);
+        bookingStorage.save(booking);
+        bookingStorage.save(booking2);
+        bookingStorage.save(booking3);
         List<Booking> expectedBookingList = bookingStorage.findAllByItemId(1L);
         assertEquals(expectedBookingList.size(), 3);
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void findAllByBookerIdOrderByStartDesc() {
+        userStorage.save(user);
+        itemStorage.save(item);
+        bookingStorage.save(booking);
+        bookingStorage.save(booking2);
+        bookingStorage.save(booking3);
         List<Booking> expectedBookingList = bookingStorage.findAllByBookerIdOrderByStartDesc(1L, Pageable.unpaged());
         assertEquals(expectedBookingList.size(), 3);
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void findAllByBookerIdAndEndBeforeOrderByStartDesc() {
+        userStorage.save(user);
+        itemStorage.save(item);
+        bookingStorage.save(booking);
+        bookingStorage.save(booking2);
+        bookingStorage.save(booking3);
         List<Booking> expectedBookingList = bookingStorage.findAllByBookerIdAndEndBeforeOrderByStartDesc(1L,
                 LocalDateTime.now().plusDays(10),
                 Pageable.unpaged());
@@ -93,7 +100,13 @@ class BookingStorageTest {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc() {
+        userStorage.save(user);
+        itemStorage.save(item);
+        bookingStorage.save(booking);
+        bookingStorage.save(booking2);
+        bookingStorage.save(booking3);
         List<Booking> expectedBookingList = bookingStorage.findAllByBookerIdAndEndBeforeOrderByStartDesc(1L,
                 LocalDateTime.now().plusDays(10),
                 Pageable.unpaged());
@@ -101,7 +114,13 @@ class BookingStorageTest {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void findAllByBookerIdAndStatusFuture() {
+        userStorage.save(user);
+        itemStorage.save(item);
+        bookingStorage.save(booking);
+        bookingStorage.save(booking2);
+        bookingStorage.save(booking3);
         List<Booking> expectedBookingList = bookingStorage.findAllByBookerIdAndStatusFuture(1L,
                 LocalDateTime.now().minusDays(1),
                 Pageable.unpaged());
@@ -109,7 +128,13 @@ class BookingStorageTest {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void findAllByBookerIdAndStatus() {
+        userStorage.save(user);
+        itemStorage.save(item);
+        bookingStorage.save(booking);
+        bookingStorage.save(booking2);
+        bookingStorage.save(booking3);
         List<Booking> expectedBookingList = bookingStorage.findAllByBookerIdAndStatus(1L,
                 "APPROVED",
                 Pageable.unpaged());
@@ -117,21 +142,39 @@ class BookingStorageTest {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void findAllByItemOwnerIdOrderByStartDesc() {
+        userStorage.save(user);
+        itemStorage.save(item);
+        bookingStorage.save(booking);
+        bookingStorage.save(booking2);
+        bookingStorage.save(booking3);
         List<Booking> expectedBookingList = bookingStorage.findAllByItemOwnerIdOrderByStartDesc(1L,
                 Pageable.unpaged());
         assertEquals(expectedBookingList.size(), 3);
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void findAllByItemOwnerIdAndEndBeforeOrderByStartDesc() {
+        userStorage.save(user);
+        itemStorage.save(item);
+        bookingStorage.save(booking);
+        bookingStorage.save(booking2);
+        bookingStorage.save(booking3);
         List<Booking> expectedBookingList = bookingStorage.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(1L,
                 LocalDateTime.now().plusDays(3), Pageable.unpaged());
         assertEquals(expectedBookingList.size(), 3);
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc() {
+        userStorage.save(user);
+        itemStorage.save(item);
+        bookingStorage.save(booking);
+        bookingStorage.save(booking2);
+        bookingStorage.save(booking3);
         List<Booking> expectedBookingList = bookingStorage.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(1L,
                 LocalDateTime.now().plusDays(3),
                 LocalDateTime.now(),
@@ -140,7 +183,13 @@ class BookingStorageTest {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void findAllByItemOwnerIdAndStatusFuture() {
+        userStorage.save(user);
+        itemStorage.save(item);
+        bookingStorage.save(booking);
+        bookingStorage.save(booking2);
+        bookingStorage.save(booking3);
         List<Booking> expectedBookingList = bookingStorage.findAllByItemOwnerIdAndStatusFuture(1L,
                 LocalDateTime.now().minusDays(1),
                 Pageable.unpaged());
@@ -148,32 +197,56 @@ class BookingStorageTest {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void findAllByItemOwnerIdAndStatusOrderByStartDesc() {
+        userStorage.save(user);
+        itemStorage.save(item);
+        bookingStorage.save(booking);
+        bookingStorage.save(booking2);
+        bookingStorage.save(booking3);
         List<Booking> expectedBookingList = bookingStorage.findAllByItemOwnerIdAndStatusOrderByStartDesc(1L,
                 "APPROVED", Pageable.unpaged());
         assertEquals(expectedBookingList.size(), 2);
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc() {
-        Booking expectedBooking = bookingStorage.findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(1L,
-                LocalDateTime.now(), "APPROVED");
-        assertEquals(expectedBooking.getId(), 13L);
-    }
-
-    @Test
-    void findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc() {
+        userStorage.save(user);
+        itemStorage.save(item);
+        bookingStorage.save(booking);
+        bookingStorage.save(booking2);
+        bookingStorage.save(booking3);
         Booking expectedBooking = bookingStorage.findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(1L,
                 LocalDateTime.now(), "APPROVED");
         assertEquals(expectedBooking.getId(), 1L);
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    void findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc() {
+        userStorage.save(user);
+        itemStorage.save(item);
+        bookingStorage.save(booking);
+        bookingStorage.save(booking2);
+        bookingStorage.save(booking3);
+        Booking expectedBooking = bookingStorage.findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(1L,
+                LocalDateTime.now(), "APPROVED");
+        assertEquals(expectedBooking.getId(), 1L);
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void findFirstByItemIdAndBookerIdAndStatusAndEndBefore() {
+        userStorage.save(user);
+        itemStorage.save(item);
+        bookingStorage.save(booking);
+        bookingStorage.save(booking2);
+        bookingStorage.save(booking3);
         Booking expectedBooking = bookingStorage.findFirstByItemIdAndBookerIdAndStatusAndEndBefore(1L,
                 1L,
                 "APPROVED",
                 LocalDateTime.now().plusDays(1));
-        assertEquals(expectedBooking.getId(), 19L);
+        assertEquals(expectedBooking.getId(), 1L);
     }
 }

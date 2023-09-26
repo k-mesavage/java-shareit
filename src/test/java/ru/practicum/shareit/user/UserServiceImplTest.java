@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,48 +31,57 @@ class UserServiceImplTest {
     private final User actualUser = new User(1L, "User name", "user@email.com");
     private final UserDto actualUserDto = UserDto.builder().id(1L).name("User name").email("user@email.com").build();
 
-    @Test
-    void addUser() {
-        when(userMapper.fromUserDto(any()))
-                .thenReturn(actualUser);
-        when(userMapper.toUserDto(any()))
-                .thenReturn(actualUserDto);
-        UserDto expectedUser = userService.addUser(actualUserDto);
-        assertEquals(expectedUser.getId(), actualUserDto.getId());
-        verify(userStorage).save(any());
+    @Nested
+    class createTests {
+        @Test
+        void addUser() {
+            when(userMapper.fromUserDto(any()))
+                    .thenReturn(actualUser);
+            when(userMapper.toUserDto(any()))
+                    .thenReturn(actualUserDto);
+            UserDto expectedUser = userService.addUser(actualUserDto);
+            assertEquals(expectedUser.getId(), actualUserDto.getId());
+            verify(userStorage).save(any());
+        }
+
+        @Test
+        void updateUser() {
+            when(userMapper.fromUserDto(any()))
+                    .thenReturn(actualUser);
+            when(userService.getUserById(anyLong()))
+                    .thenReturn(actualUserDto);
+            UserDto expectedUser = userService.updateUser(actualUserDto, 1L);
+            assertEquals(expectedUser.getName(), actualUserDto.getName());
+            assertEquals(expectedUser.getEmail(), actualUserDto.getEmail());
+            verify(userStorage).save(any());
+        }
     }
 
-    @Test
-    void getUserById() {
-        when(userMapper.toUserDto(any()))
-                .thenReturn(actualUserDto);
+    @Nested
+    class getTest {
+        @Test
+        void getUserById() {
+            when(userMapper.toUserDto(any()))
+                    .thenReturn(actualUserDto);
 
-        UserDto expectedUser = userService.getUserById(1L);
-        assertEquals(expectedUser.getId(), actualUserDto.getId());
-        verify(userStorage).getReferenceById(anyLong());
+            UserDto expectedUser = userService.getUserById(1L);
+            assertEquals(expectedUser.getId(), actualUserDto.getId());
+            verify(userStorage).getReferenceById(anyLong());
+        }
+
+        @Test
+        void getAllUsers() {
+            userService.getAllUsers();
+            verify(userStorage).findAll();
+        }
     }
 
-    @Test
-    void getAllUsers() {
-        userService.getAllUsers();
-        verify(userStorage).findAll();
-    }
-
-    @Test
-    void updateUser() {
-        when(userMapper.fromUserDto(any()))
-                .thenReturn(actualUser);
-        when(userService.getUserById(anyLong()))
-                .thenReturn(actualUserDto);
-        UserDto expectedUser = userService.updateUser(actualUserDto, 1L);
-        assertEquals(expectedUser.getName(), actualUserDto.getName());
-        assertEquals(expectedUser.getEmail(), actualUserDto.getEmail());
-        verify(userStorage).save(any());
-    }
-
-    @Test
-    void deleteUser() {
-        userService.deleteUser(1L);
-        verify(userStorage).deleteById(anyLong());
+    @Nested
+    class deleteTests {
+        @Test
+        void deleteUser() {
+            userService.deleteUser(1L);
+            verify(userStorage).deleteById(anyLong());
+        }
     }
 }

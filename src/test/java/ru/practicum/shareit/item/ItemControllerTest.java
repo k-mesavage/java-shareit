@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -46,99 +47,108 @@ class ItemControllerTest {
             .authorName("Author name")
             .build();
 
-    @Test
-    void getItemInformation() throws Exception {
-        when(itemService.getItemById(anyLong(), anyLong()))
-                .thenReturn(actualItemDto);
+    @Nested
+    class createTests {
+        @Test
+        void addItem() throws Exception {
+            when(itemService.addItem(anyLong(), any()))
+                    .thenReturn(actualItemDto);
 
-        mvc.perform(get("/items/{itemId}", 1L)
-                .header(HEADER, 1L)
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(actualItemDto.getId()), Long.class));
+            mvc.perform(post("/items")
+                            .header(HEADER, 1L)
+                            .content(mapper.writeValueAsString(actualItemDto))
+                            .characterEncoding(StandardCharsets.UTF_8)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id", is(actualCommentDto.getId()), Long.class));
+        }
+
+        @Test
+        void updateItem() throws Exception {
+            when(itemService.updateItem(anyLong(), anyLong(), any()))
+                    .thenReturn(actualItemDto);
+
+            mvc.perform(patch("/items/{itemId}", 1L)
+                            .header(HEADER, 1L)
+                            .content(mapper.writeValueAsString(actualItemDto))
+                            .characterEncoding(StandardCharsets.UTF_8)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id", is(actualCommentDto.getId()), Long.class));
+        }
+
+        @Test
+        void addComment() throws Exception {
+            when(itemService.addComment(anyLong(), anyLong(), any()))
+                    .thenReturn(actualCommentDto);
+
+            mvc.perform(post("/items/{itemId}/comment", 1L)
+                            .header(HEADER, 1L)
+                            .content(mapper.writeValueAsString(actualCommentDto))
+                            .characterEncoding(StandardCharsets.UTF_8)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id", is(actualCommentDto.getId()), Long.class));
+        }
     }
 
-    @Test
-    void getOwnerItems() throws Exception {
-        when(itemService.getAllItemsByUserId(anyLong(), anyInt(), anyInt()))
-                .thenReturn(actualItemList);
+    @Nested
+    class getTests {
+        @Test
+        void getItemInformation() throws Exception {
+            when(itemService.getItemById(anyLong(), anyLong()))
+                    .thenReturn(actualItemDto);
 
-        mvc.perform(get("/items")
-                .header(HEADER, 1L)
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].id", is(actualItemDto.getId()), Long.class));
+            mvc.perform(get("/items/{itemId}", 1L)
+                            .header(HEADER, 1L)
+                            .characterEncoding(StandardCharsets.UTF_8)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id", is(actualItemDto.getId()), Long.class));
+        }
 
+        @Test
+        void getOwnerItems() throws Exception {
+            when(itemService.getAllItemsByUserId(anyLong(), anyInt(), anyInt()))
+                    .thenReturn(actualItemList);
+
+            mvc.perform(get("/items")
+                            .header(HEADER, 1L)
+                            .characterEncoding(StandardCharsets.UTF_8)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.[0].id", is(actualItemDto.getId()), Long.class));
+
+        }
+
+        @Test
+        void searchItems() throws Exception {
+            when(itemService.searchItems(anyString()))
+                    .thenReturn(actualItemList);
+
+            mvc.perform(get("/items/search")
+                            .param("text", "Some text")
+                            .characterEncoding(StandardCharsets.UTF_8)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.[0].id", is(actualItemDto.getId()), Long.class));
+        }
     }
 
-    @Test
-    void searchItems() throws Exception {
-        when(itemService.searchItems(anyString()))
-                .thenReturn(actualItemList);
-
-        mvc.perform(get("/items/search")
-                .param("text", "Some text")
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].id", is(actualItemDto.getId()), Long.class));
-    }
-
-    @Test
-    void addItem() throws Exception {
-        when(itemService.addItem(anyLong(), any()))
-                .thenReturn(actualItemDto);
-
-        mvc.perform(post("/items")
-                .header(HEADER, 1L)
-                .content(mapper.writeValueAsString(actualItemDto))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(actualCommentDto.getId()), Long.class));
-    }
-
-    @Test
-    void updateItem() throws Exception {
-        when(itemService.updateItem(anyLong(), anyLong(), any()))
-                .thenReturn(actualItemDto);
-
-        mvc.perform(patch("/items/{itemId}", 1L)
-                        .header(HEADER, 1L)
-                        .content(mapper.writeValueAsString(actualItemDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(actualCommentDto.getId()), Long.class));
-    }
-
-    @Test
-    void deleteItem() throws Exception {
-        mvc.perform(delete("/items/{itemId}", 1L)
-                        .header(HEADER, 1L)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void addComment() throws Exception {
-        when(itemService.addComment(anyLong(), anyLong(), any()))
-                .thenReturn(actualCommentDto);
-
-        mvc.perform(post("/items/{itemId}/comment", 1L)
-                .header(HEADER, 1L)
-                .content(mapper.writeValueAsString(actualCommentDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(actualCommentDto.getId()), Long.class));
+    @Nested
+    class deleteTests {
+        @Test
+        void deleteItem() throws Exception {
+            mvc.perform(delete("/items/{itemId}", 1L)
+                            .header(HEADER, 1L)
+                            .characterEncoding(StandardCharsets.UTF_8)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+        }
     }
 }
