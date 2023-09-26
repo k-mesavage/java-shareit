@@ -32,7 +32,7 @@ class UserServiceImplTest {
     private final UserDto actualUserDto = UserDto.builder().id(1L).name("User name").email("user@email.com").build();
 
     @Nested
-    class createTests {
+    class CreateTests {
         @Test
         void addUser() {
             when(userMapper.fromUserDto(any()))
@@ -58,7 +58,7 @@ class UserServiceImplTest {
     }
 
     @Nested
-    class getTest {
+    class GetTest {
         @Test
         void getUserById() {
             when(userMapper.toUserDto(any()))
@@ -77,7 +77,7 @@ class UserServiceImplTest {
     }
 
     @Nested
-    class deleteTests {
+    class DeleteTests {
         @Test
         void deleteUser() {
             userService.deleteUser(1L);

@@ -36,7 +36,7 @@ class UserControllerTest {
     private final UserDto userDto = UserDto.builder().id(1L).name("User").email("user@email.com").build();
 
     @Nested
-    class createTests {
+    class CreateTests {
         @Test
         void addUser() throws Exception {
             when(userService.addUser(any()))
@@ -67,7 +67,7 @@ class UserControllerTest {
     }
 
     @Nested
-    class getTests {
+    class GetTest {
         @Test
         void getUserById() throws Exception {
             when(userService.getUserById(anyLong()))
@@ -96,7 +96,7 @@ class UserControllerTest {
     }
 
     @Nested
-    class deleteTests {
+    class DeleteTests {
         @Test
         void deleteUser() throws Exception {
             mvc.perform(delete("/users/{userId}", 1L)

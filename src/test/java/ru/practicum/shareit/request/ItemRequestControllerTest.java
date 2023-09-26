@@ -48,7 +48,7 @@ class ItemRequestControllerTest {
     private static final List<ItemRequestDto> actualItems = List.of(actualItemRequestDto);
 
     @Nested
-    class createTests {
+    class CreateTests {
         @Test
         @SneakyThrows
         void addNewRequest() {
@@ -67,7 +67,7 @@ class ItemRequestControllerTest {
     }
 
     @Nested
-    class getTests {
+    class GetTest {
         @Test
         @SneakyThrows
         void getRequestById() {

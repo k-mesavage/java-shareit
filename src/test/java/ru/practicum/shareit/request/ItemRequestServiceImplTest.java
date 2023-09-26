@@ -47,7 +47,7 @@ class ItemRequestServiceImplTest {
             .build();
 
     @Nested
-    class createTests {
+    class CreateTests {
         @Test
         void addItemRequest() {
             when(requestMapper.fromItemRequestDto(any()))
@@ -62,7 +62,7 @@ class ItemRequestServiceImplTest {
     }
 
     @Nested
-    class getTests {
+    class GetTest {
         @Test
         void getAllItemRequestsByUser() {
             itemRequestService.getAllItemRequestsByUser(1L);

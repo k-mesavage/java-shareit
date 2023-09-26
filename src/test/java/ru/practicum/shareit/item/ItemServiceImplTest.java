@@ -66,7 +66,7 @@ class ItemServiceImplTest {
             .build();
 
     @Nested
-    class createTests {
+    class CreateTests {
         @Test
         void addItem() {
             lenient().when(itemMapper.fromItemDto(any()))
@@ -121,7 +121,7 @@ class ItemServiceImplTest {
     }
 
     @Nested
-    class getTests {
+    class GetTest {
         @Test
         void getItemById() {
             when(itemStorage.getReferenceById(anyLong()))
@@ -161,7 +161,7 @@ class ItemServiceImplTest {
     }
 
     @Nested
-    class deleteTests {
+    class DeleteTests {
         @Test
         void deleteItem() {
             itemService.deleteItem(1L, 1L);

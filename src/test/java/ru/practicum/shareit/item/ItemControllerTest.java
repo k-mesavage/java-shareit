@@ -48,7 +48,7 @@ class ItemControllerTest {
             .build();
 
     @Nested
-    class createTests {
+    class CreateTests {
         @Test
         void addItem() throws Exception {
             when(itemService.addItem(anyLong(), any()))
@@ -96,7 +96,7 @@ class ItemControllerTest {
     }
 
     @Nested
-    class getTests {
+    class GetTest {
         @Test
         void getItemInformation() throws Exception {
             when(itemService.getItemById(anyLong(), anyLong()))
@@ -140,7 +140,7 @@ class ItemControllerTest {
     }
 
     @Nested
-    class deleteTests {
+    class DeleteTests {
         @Test
         void deleteItem() throws Exception {
             mvc.perform(delete("/items/{itemId}", 1L)
