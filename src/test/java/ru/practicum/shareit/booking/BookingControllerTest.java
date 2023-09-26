@@ -132,7 +132,7 @@ public class BookingControllerTest {
     }
 
     @Nested
-    class approveTests {
+    class ApproveTests {
         @Test
         @SneakyThrows
         void shouldApproveBooking() {
