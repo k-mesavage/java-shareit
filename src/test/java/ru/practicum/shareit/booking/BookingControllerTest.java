@@ -50,7 +50,7 @@ public class BookingControllerTest {
             .build();
 
     @Nested
-    class createTests {
+    class CreateTests {
         @Test
         @SneakyThrows
         void shouldCreateNewBooking() {
@@ -184,7 +184,7 @@ public class BookingControllerTest {
     }
 
     @Nested
-    class getTest {
+    class GetTest {
         @Test
         @SneakyThrows
         void shouldGetBookingById() {

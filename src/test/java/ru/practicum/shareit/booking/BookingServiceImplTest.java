@@ -84,7 +84,7 @@ class BookingServiceImplTest {
             .build();
 
     @Nested
-    class createTests {
+    class CreateTests {
         @Test
         void shouldAddBooking() {
             when(itemStorage.getReferenceById(anyLong()))
@@ -100,7 +100,7 @@ class BookingServiceImplTest {
     }
 
     @Nested
-    class requestTests {
+    class RequestTests {
         @Test
         void shouldRequestBooking() {
             when(bookingStorage.getReferenceById(anyLong()))
@@ -131,7 +131,7 @@ class BookingServiceImplTest {
     }
 
     @Nested
-    class getTest {
+    class GetTest {
         @Test
         void getAllWaitingBookingsByUser() {
             List<BookingDto> actualListOfBookings = new ArrayList<>();
