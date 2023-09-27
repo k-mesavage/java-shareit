@@ -76,7 +76,7 @@ class ItemServiceImplTest {
             lenient().when(itemMapper.toItemDto(any()))
                     .thenReturn(actualItemDto);
 
-            ItemDto expectedItem = itemService.addItem(1L, actualItemDto);
+            final ItemDto expectedItem = itemService.addItem(1L, actualItemDto);
             assertEquals(expectedItem.getId(), actualItem.getId());
             assertEquals(expectedItem.getName(), "Item name");
             verify(itemStorage).save(actualItem);
@@ -91,20 +91,20 @@ class ItemServiceImplTest {
             when(itemMapper.toItemDto(actualItem))
                     .thenReturn(actualItemDto);
 
-            ItemDto expectedItem = itemService.updateItem(1L, 1L, actualItemDto);
+            final ItemDto expectedItem = itemService.updateItem(1L, 1L, actualItemDto);
             assertEquals(expectedItem.getId(), actualItem.getId());
             verify(itemStorage).save(actualItem);
         }
 
         @Test
         void addComment() {
-            Comment actualComment = Comment.builder()
+            final Comment actualComment = Comment.builder()
                     .id(1L)
                     .item(actualItem)
                     .author(actualUser)
                     .text("Text of comment")
                     .build();
-            CommentDto actualCommentDto = CommentDto.builder()
+            final CommentDto actualCommentDto = CommentDto.builder()
                     .text("Text of comment")
                     .id(1L)
                     .authorName(actualUser.getName())
@@ -114,7 +114,7 @@ class ItemServiceImplTest {
             when(commentMapper.toCommentDto(any()))
                     .thenReturn(actualCommentDto);
 
-            CommentDto expectedCommentDto = itemService.addComment(1L, 1L, actualCommentDto);
+            final CommentDto expectedCommentDto = itemService.addComment(1L, 1L, actualCommentDto);
             assertEquals(expectedCommentDto.getText(), "Text of comment");
             verify(commentStorage).save(actualComment);
         }
@@ -130,7 +130,7 @@ class ItemServiceImplTest {
                     .thenReturn(actualItemDto);
             when(bookingMapper.addShortBooking(any()))
                     .thenReturn(actualItemDto);
-            ItemDto expectedItem = itemService.getItemById(1L, 1L);
+            final ItemDto expectedItem = itemService.getItemById(1L, 1L);
             assertEquals(expectedItem.getId(), actualItem.getId());
         }
 
@@ -143,7 +143,7 @@ class ItemServiceImplTest {
             when(bookingMapper.addShortBooking(any()))
                     .thenReturn(actualItemDto);
 
-            List<ItemDto> expectedItems = itemService.getAllItemsByUserId(1L, 1, 10);
+            final List<ItemDto> expectedItems = itemService.getAllItemsByUserId(1L, 1, 10);
             assertEquals(expectedItems.size(), 1);
             assertEquals(expectedItems.get(0), actualItemDto);
         }
@@ -154,7 +154,7 @@ class ItemServiceImplTest {
                     .thenReturn(List.of(actualItem));
             when(itemMapper.toItemDto(any()))
                     .thenReturn(actualItemDto);
-            List<ItemDto> expectedItems = itemService.searchItems("Some text");
+            final List<ItemDto> expectedItems = itemService.searchItems("Some text");
             assertEquals(expectedItems.size(), 1);
             assertEquals(expectedItems.get(0).getId(), actualItem.getId());
         }

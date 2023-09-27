@@ -47,7 +47,7 @@ class RequestMapperTest {
 
     @Test
     void toItemRequestDto() {
-        ItemRequestDto expectedRequest = requestMapper.toItemRequestDto(actualItemRequest);
+        final ItemRequestDto expectedRequest = requestMapper.toItemRequestDto(actualItemRequest);
         assertEquals(expectedRequest.getId(), actualItemRequest.getId());
         assertEquals(expectedRequest.getRequesterId(), actualItemRequest.getRequesterId());
         assertEquals(expectedRequest.getCreated(), actualItemRequest.getCreated());
@@ -67,7 +67,7 @@ class RequestMapperTest {
 
     @Test
     void fromItemRequestDto() {
-        ItemRequest expectedRequest = requestMapper.fromItemRequestDto(actualItemRequestDto);
+        final ItemRequest expectedRequest = requestMapper.fromItemRequestDto(actualItemRequestDto);
         assertEquals(expectedRequest.getId(), actualItemRequestDto.getId());
         assertEquals(expectedRequest.getRequesterId(), actualItemRequestDto.getRequesterId());
         assertEquals(expectedRequest.getCreated(), actualItemRequestDto.getCreated());
@@ -75,14 +75,14 @@ class RequestMapperTest {
 
     @Test
     void fromListToItemRequestList() {
-        List<ItemRequestDto> expectedRequestsList = requestMapper.fromListToItemRequestList(List.of(actualItemRequest));
+        final List<ItemRequestDto> expectedRequestsList = requestMapper.fromListToItemRequestList(List.of(actualItemRequest));
         assertEquals(expectedRequestsList.get(0).getId(), actualItemRequest.getId());
         assertEquals(expectedRequestsList.get(0).getDescription(), "Desc");
     }
 
     @Test
     void updateRequesterIdAndCreationDate() {
-        LocalDateTime actualCreated = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+        final LocalDateTime actualCreated = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
         requestMapper.updateRequesterIdAndCreationDate(2L, actualItemRequest);
         assertEquals(actualItemRequest.getCreated().truncatedTo(ChronoUnit.MINUTES), actualCreated);
         assertEquals(actualItemRequest.getRequesterId(), 2L);

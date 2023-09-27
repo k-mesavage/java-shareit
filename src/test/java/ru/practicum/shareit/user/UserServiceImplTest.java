@@ -64,7 +64,7 @@ class UserServiceImplTest {
             when(userMapper.toUserDto(any()))
                     .thenReturn(actualUserDto);
 
-            UserDto expectedUser = userService.getUserById(1L);
+            final UserDto expectedUser = userService.getUserById(1L);
             assertEquals(expectedUser.getId(), actualUserDto.getId());
             verify(userStorage).getReferenceById(anyLong());
         }

@@ -36,35 +36,35 @@ class ItemMapperTest {
 
     @Test
     void toItemDto() {
-        ItemDto expectedItemDto = itemMapper.toItemDto(actualItem);
+        final ItemDto expectedItemDto = itemMapper.toItemDto(actualItem);
         assertEquals(expectedItemDto.getId(), actualItem.getId());
         assertEquals(expectedItemDto.getName(), actualItem.getName());
     }
 
     @Test
     void fromItemDto() {
-        Item expectedItem = itemMapper.fromItemDto(actualItemDto);
+        final Item expectedItem = itemMapper.fromItemDto(actualItemDto);
         assertEquals(expectedItem.getId(), actualItemDto.getId());
         assertEquals(expectedItem.getDescription(), actualItemDto.getDescription());
     }
 
     @Test
     void toBooking() {
-        ShortItemDto expectedBookingItem = itemMapper.toBooking(actualItem);
+        final ShortItemDto expectedBookingItem = itemMapper.toBooking(actualItem);
         assertEquals(expectedBookingItem.getId(), actualItem.getId());
         assertEquals(expectedBookingItem.getName(), actualItem.getName());
     }
 
     @Test
     void updateItem() {
-        Item expectedItem = itemMapper.updateItem(actualItem, actualItemDto);
+        final Item expectedItem = itemMapper.updateItem(actualItem, actualItemDto);
         assertEquals(expectedItem.getDescription(), actualItemDto.getDescription());
         assertEquals(expectedItem.getName(), actualItemDto.getName());
     }
 
     @Test
     void toItemDtoList() {
-        List<ItemDto> expectedList = itemMapper.toItemDtoList(List.of(actualItem));
+        final List<ItemDto> expectedList = itemMapper.toItemDtoList(List.of(actualItem));
         assertEquals(expectedList.get(0).getId(), actualItem.getId());
         assertEquals(expectedList.get(0).getName(), actualItem.getName());
     }

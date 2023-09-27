@@ -54,7 +54,7 @@ class BookingMapperTest {
 
     @Test
     void toDto() {
-        BookingDto expectedBooking = bookingMapper.toDto(booking);
+        final BookingDto expectedBooking = bookingMapper.toDto(booking);
         assertEquals(expectedBooking.getId(), 1L);
         assertEquals(expectedBooking.getStart(), booking.getStart());
         assertEquals(expectedBooking.getEnd(), booking.getEnd());
@@ -62,13 +62,13 @@ class BookingMapperTest {
 
     @Test
     void fromListToDtoList() {
-        List<BookingDto> actualBookings = List.of(BookingDto.builder()
+        final List<BookingDto> actualBookings = List.of(BookingDto.builder()
                 .id(1L)
                 .status("APPROVED")
                 .build());
-        List<Booking> bookings = List.of(booking);
+        final List<Booking> bookings = List.of(booking);
 
-        List<BookingDto> expectedList = bookingMapper.fromListToDtoList(bookings);
+        final List<BookingDto> expectedList = bookingMapper.fromListToDtoList(bookings);
         assertEquals(actualBookings.size(), expectedList.size());
         assertEquals(actualBookings.get(0).getId(), expectedList.get(0).getId());
         assertEquals(actualBookings.get(0).getStatus(), "APPROVED");
@@ -77,7 +77,7 @@ class BookingMapperTest {
 
     @Test
     void toShortBookingDto() {
-        ShortBookingDto expectedBooking = bookingMapper.toShortBookingDto(booking);
+        final ShortBookingDto expectedBooking = bookingMapper.toShortBookingDto(booking);
 
         assertEquals(expectedBooking.getId(), booking.getId());
         assertEquals(expectedBooking.getBookerId(), booking.getBooker().getId());
@@ -85,7 +85,7 @@ class BookingMapperTest {
 
     @Test
     void addShortBooking() {
-        ItemDto actualItem = ItemDto.builder()
+        final ItemDto actualItem = ItemDto.builder()
                 .id(1L)
                 .requestId(1L)
                 .name("Item Name").build();
@@ -97,7 +97,7 @@ class BookingMapperTest {
                 .findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(anyLong(), any(), anyString()))
                 .thenReturn(booking);
 
-        ItemDto expectedItem = bookingMapper.addShortBooking(actualItem);
+        final ItemDto expectedItem = bookingMapper.addShortBooking(actualItem);
         assertEquals(expectedItem.getLastBooking().getId(), booking.getId());
         assertEquals(expectedItem.getNextBooking().getBookerId(), booking.getBooker().getId());
     }

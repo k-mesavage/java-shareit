@@ -136,7 +136,7 @@ public class BookingControllerTest {
         @Test
         @SneakyThrows
         void shouldApproveBooking() {
-            BookingDto bookingDto = BookingDto.builder()
+            final BookingDto bookingDto = BookingDto.builder()
                     .id(1L)
                     .status("approve")
                     .booker(shortUserDto1)
@@ -161,9 +161,9 @@ public class BookingControllerTest {
         @Test
         @SneakyThrows
         void shouldReApproveBooking() {
-            LocalDateTime start = LocalDateTime.now().plusSeconds(1);
-            LocalDateTime end = LocalDateTime.now().plusDays(1);
-            BookingDto bookingDto = BookingDto.builder()
+            final LocalDateTime start = LocalDateTime.now().plusSeconds(1);
+            final LocalDateTime end = LocalDateTime.now().plusDays(1);
+            final BookingDto bookingDto = BookingDto.builder()
                     .id(1L)
                     .start(start)
                     .end(end)
@@ -188,9 +188,9 @@ public class BookingControllerTest {
         @Test
         @SneakyThrows
         void shouldGetBookingById() {
-            LocalDateTime start = LocalDateTime.now().plusSeconds(1);
-            LocalDateTime end = LocalDateTime.now().plusDays(1);
-            BookingDto bookingDto = BookingDto.builder()
+            final LocalDateTime start = LocalDateTime.now().plusSeconds(1);
+            final LocalDateTime end = LocalDateTime.now().plusDays(1);
+            final BookingDto bookingDto = BookingDto.builder()
                     .id(1L)
                     .start(start)
                     .end(end)
@@ -216,9 +216,9 @@ public class BookingControllerTest {
         @Test
         @SneakyThrows
         void shouldGetAllBookingsByUser() {
-            LocalDateTime start = LocalDateTime.now().plusSeconds(1);
-            LocalDateTime end = LocalDateTime.now().plusDays(1);
-            BookingDto bookingDto = BookingDto.builder()
+            final LocalDateTime start = LocalDateTime.now().plusSeconds(1);
+            final LocalDateTime end = LocalDateTime.now().plusDays(1);
+            final BookingDto bookingDto = BookingDto.builder()
                     .id(1L)
                     .start(start)
                     .end(end)

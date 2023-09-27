@@ -22,7 +22,7 @@ class UserMapperTest {
 
     @Test
     void toUserDto() {
-        UserDto expectedUser = userMapper.toUserDto(user);
+        final UserDto expectedUser = userMapper.toUserDto(user);
         assertEquals(expectedUser.getId(), user.getId());
         assertEquals(expectedUser.getName(), user.getName());
         assertEquals(expectedUser.getEmail(), user.getEmail());
@@ -30,7 +30,7 @@ class UserMapperTest {
 
     @Test
     void fromUserDto() {
-        User expectedUser = userMapper.fromUserDto(userDto);
+        final User expectedUser = userMapper.fromUserDto(userDto);
         assertEquals(expectedUser.getId(), userDto.getId());
         assertEquals(expectedUser.getName(), userDto.getName());
         assertEquals(expectedUser.getEmail(), userDto.getEmail());
@@ -38,7 +38,7 @@ class UserMapperTest {
 
     @Test
     void toBooking() {
-        ShortUserDto expectedUser = userMapper.toBooking(user);
+        final ShortUserDto expectedUser = userMapper.toBooking(user);
         assertEquals(expectedUser.getId(), user.getId());
     }
 }

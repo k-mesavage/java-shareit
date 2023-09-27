@@ -37,14 +37,14 @@ class CommentMapperTest {
 
     @Test
     void toCommentDto() {
-        CommentDto expectedComment = commentMapper.toCommentDto(actualComment);
+        final CommentDto expectedComment = commentMapper.toCommentDto(actualComment);
         assertEquals(expectedComment.getId(), actualComment.getId());
         assertEquals(expectedComment.getText(), actualComment.getText());
     }
 
     @Test
     void toComment() {
-        Comment expectedComment = commentMapper.toComment(actualCommentDto, item, user, actualCommentDto.getCreated());
+        final Comment expectedComment = commentMapper.toComment(actualCommentDto, item, user, actualCommentDto.getCreated());
         assertEquals(expectedComment.getText(), actualCommentDto.getText());
         assertEquals(expectedComment.getAuthor(), user);
         assertEquals(expectedComment.getItem(), item);
@@ -52,8 +52,8 @@ class CommentMapperTest {
 
     @Test
     void toDtoList() {
-        List<Comment> comments = List.of(actualComment);
-        List<CommentDto> expectedList = commentMapper.toDtoList(comments);
+        final List<Comment> comments = List.of(actualComment);
+        final List<CommentDto> expectedList = commentMapper.toDtoList(comments);
         assertEquals(expectedList.size(), 1);
         assertEquals(expectedList.get(0).getId(), actualComment.getId());
         assertEquals(expectedList.get(0).getText(), actualComment.getText());
