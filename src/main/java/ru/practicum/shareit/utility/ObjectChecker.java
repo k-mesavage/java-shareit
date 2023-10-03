@@ -84,7 +84,7 @@ public class ObjectChecker {
         if (workingBookingDto.getStart().isBefore(LocalDateTime.now()) ||
                 workingBookingDto.getEnd().isBefore(LocalDateTime.now()) ||
                 workingBookingDto.getEnd().isBefore(workingBookingDto.getStart()) ||
-                workingBookingDto.getEnd().equals(workingBookingDto.getStart())) {
+        workingBookingDto.getEnd().equals(workingBookingDto.getStart())) {
             throw new BadRequestException("Check Date Exception");
         }
     }
@@ -95,6 +95,12 @@ public class ObjectChecker {
                 "APPROVED",
                 LocalDateTime.now()) == null) {
             throw new BadRequestException("Booking Found Exception");
+        }
+    }
+
+    public void pageRequestLegal(int from, int size) {
+        if (from < 0 || size < 0) {
+            throw new IllegalArgumentException("Page Request Exception");
         }
     }
 }

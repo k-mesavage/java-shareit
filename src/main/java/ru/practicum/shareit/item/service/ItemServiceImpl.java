@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +19,6 @@ import ru.practicum.shareit.user.storage.UserStorage;
 import ru.practicum.shareit.utility.ObjectChecker;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,7 +47,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto addItem(Long userId, ItemDto itemDto) {
         objectChecker.userFound(userId);
         Item newItem = itemMapper.fromItemDto(itemDto);
-        newItem.setOwner(userStorage.findById(userId).get());
+        newItem.setOwner(userStorage.getReferenceById(userId));
         return itemMapper.toItemDto(itemStorage.save(newItem));
     }
 
@@ -73,8 +73,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getAllItemsByUserId(Long userId) {
-        List<ItemDto> items = itemStorage.findAllByOwnerId(userId)
+    public List<ItemDto> getAllItemsByUserId(Long userId, int from, int size) {
+        List<ItemDto> items = itemStorage.findAllByOwnerId(userId, PageRequest.of(from, size))
                 .stream()
                 .map(itemMapper::toItemDto)
                 .map(bookingMapper::addShortBooking)
@@ -109,14 +109,13 @@ public class ItemServiceImpl implements ItemService {
         objectChecker.userFound(userId);
         objectChecker.itemFound(itemId);
         objectChecker.bookingFound(userId, itemId);
-        User author = userStorage.findById(userId).get();
-        Item item = itemStorage.findById(itemId).get();
+        User author = userStorage.getReferenceById(userId);
+        Item item = itemStorage.getReferenceById(itemId);
         Comment comment = commentMapper.toComment(commentDto, item, author, created);
         return commentMapper.toCommentDto(commentStorage.save(comment));
     }
 
     private void setItemComments(ItemDto itemDto) {
-        itemDto.setComments(commentMapper.toDtoList(commentStorage.findAllByItemId(itemDto.getId()))
-                .orElse(new ArrayList<>()));
+        itemDto.setComments(commentMapper.toDtoList(commentStorage.findAllByItemId(itemDto.getId())));
     }
 }

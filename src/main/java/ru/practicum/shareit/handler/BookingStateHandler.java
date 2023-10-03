@@ -1,5 +1,6 @@
 package ru.practicum.shareit.handler;
 
+import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.params.BookingState;
@@ -24,7 +25,7 @@ public abstract class BookingStateHandler {
 
     public abstract BookingState getState();
 
-    public abstract List<BookingDto> getBookings(Long senderId, UserType userType);
+    public abstract List<BookingDto> getBookings(Long senderId, UserType userType, PageRequest pageRequest);
 
     public static BookingStateHandler link(BookingStateHandler handler, BookingStateHandler... handlerNext) {
         BookingStateHandler head = handler;
@@ -35,13 +36,13 @@ public abstract class BookingStateHandler {
         return handler;
     }
 
-    public List<BookingDto> handle(Long senderId, BookingState state, UserType userType) {
+    public List<BookingDto> handle(Long senderId, BookingState state, UserType userType, PageRequest pageRequest) {
         if (state.equals(getState())) {
-            return getBookings(senderId, userType);
+            return getBookings(senderId, userType, pageRequest);
         }
         if (next == null) {
             return new ArrayList<>();
         }
-        return next.handle(senderId, state, userType);
+        return next.handle(senderId, state, userType, pageRequest);
     }
 }

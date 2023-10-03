@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,9 +42,9 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public BookingDto addBooking(Long bookerId, WorkingBookingDto workingBookingDto) {
+        objectChecker.userFound(bookerId);
         objectChecker.checkDateTime(workingBookingDto);
         objectChecker.itemFound(workingBookingDto.getItemId());
-        objectChecker.userFound(bookerId);
         Item item = itemStorage.getReferenceById(workingBookingDto.getItemId());
         objectChecker.itemAvailable(item.getId());
         objectChecker.checkBookingDate(workingBookingDto, item.getId());
@@ -52,8 +53,8 @@ public class BookingServiceImpl implements BookingService {
                 .start(workingBookingDto.getStart())
                 .end(workingBookingDto.getEnd())
                 .status(BookingState.WAITING.toString())
-                .itemId(workingBookingDto.getItemId())
-                .bookerId(bookerId)
+                .item(itemStorage.getReferenceById(workingBookingDto.getItemId()))
+                .booker(userStorage.getReferenceById(bookerId))
                 .build();
         newBooking = bookingStorage.save(newBooking);
         return bookingMapper.toDto(newBooking);
@@ -63,50 +64,57 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public BookingDto requestBooking(Boolean approved, Long bookingId, Long userId) {
         Booking booking = bookingStorage.getReferenceById(bookingId);
-        Item item = itemStorage.getReferenceById(booking.getItemId());
+        Item item = itemStorage.getReferenceById(booking.getItem().getId());
         User owner = userStorage.getReferenceById(item.getOwner().getId());
         objectChecker.userAccess(userId, owner.getId());
         if (approved) {
             objectChecker.reApprove(booking);
             booking.setStatus(APPROVED.toString());
+            bookingStorage.save(booking);
         } else {
             booking.setStatus(REJECTED.toString());
+            bookingStorage.save(booking);
         }
-        bookingStorage.save(booking);
-
         return bookingMapper.toDto(booking);
     }
 
     @Override
-    public List<BookingDto> getAllBookingsByUser(Long bookerId, String state) {
-        objectChecker.userFound(bookerId);
-        UserType userType = UserType.USER;
-        return getAllBookingsForUserOrOwnerByUserIdAndState(bookerId, state, userType);
-    }
-
-    @Override
-    public List<BookingDto> getAllItemsBookingByOwner(Long ownerId, String state) {
-        objectChecker.userFound(ownerId);
-        UserType userType = UserType.OWNER;
-        return getAllBookingsForUserOrOwnerByUserIdAndState(ownerId, state, userType);
+    public List<BookingDto> getAllBookingsByUser(UserType userType, Long bookerId, String state, int from, int size) {
+        if (userType.equals(UserType.USER)) {
+            objectChecker.userFound(bookerId);
+            objectChecker.pageRequestLegal(from, size);
+            if (from < 0 || size < 0) {
+                throw new IllegalArgumentException("Page Request Exception");
+            }
+            PageRequest pageRequest = PageRequest.of(from > 0 ? from / size : 0, size);
+            return getAllBookingsForUserOrOwnerByUserIdAndState(bookerId, state, userType, pageRequest);
+        }
+        if (userType.equals(UserType.OWNER)) {
+            objectChecker.userFound(bookerId);
+            objectChecker.pageRequestLegal(from, size);
+            PageRequest pageRequest = PageRequest.of(from > 0 ? from / size : 0, size);
+            return getAllBookingsForUserOrOwnerByUserIdAndState(bookerId, state, userType, pageRequest);
+        }
+        return null;
     }
 
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public BookingDto getBookingById(Long bookingId, Long userId) {
         Booking booking = bookingStorage.getReferenceById(bookingId);
-        Item item = itemStorage.getReferenceById(booking.getItemId());
+        Item item = booking.getItem();
         try {
-            objectChecker.userAccess(booking.getBookerId(), userId);
+            objectChecker.userAccess(booking.getBooker().getId(), userId);
         } catch (ObjectNotFoundException e) {
             objectChecker.userAccess(item.getOwner().getId(), userId);
         }
         return bookingMapper.toDto(booking);
     }
 
-    private List<BookingDto> getAllBookingsForUserOrOwnerByUserIdAndState(Long bookerId,
-                                                                          String state,
-                                                                          UserType userType) {
+    public List<BookingDto> getAllBookingsForUserOrOwnerByUserIdAndState(Long bookerId,
+                                                                         String state,
+                                                                         UserType userType,
+                                                                         PageRequest pageRequest) {
         final BookingStateHandler handler = BookingStateHandler.link(
                 new GetRejected(bookingStorage, bookingMapper),
                 new GetWaiting(bookingStorage, bookingMapper),
@@ -115,6 +123,6 @@ public class BookingServiceImpl implements BookingService {
                 new GetCurrent(bookingStorage, bookingMapper),
                 new GetAll(bookingStorage, bookingMapper));
         BookingState status = BookingState.getValue(state);
-        return handler.handle(bookerId, status, userType);
+        return handler.handle(bookerId, status, userType, pageRequest);
     }
 }

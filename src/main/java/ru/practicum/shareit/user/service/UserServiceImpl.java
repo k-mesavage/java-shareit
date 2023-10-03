@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.List;
@@ -22,8 +23,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public UserDto addUser(UserDto user) {
-        return userMapper.toUserDto(storage.save(userMapper.fromUserDto(user)));
+    public UserDto addUser(UserDto userDto) {
+        User user = userMapper.fromUserDto(userDto);
+        user = storage.save(user);
+        return userMapper.toUserDto(user);
     }
 
     @Override

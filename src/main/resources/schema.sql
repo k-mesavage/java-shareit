@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS
 (
     id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     description  varchar(200),
-    requestor_id BIGINT REFERENCES users (id) ON DELETE CASCADE
+    requester_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
+    creation_date TIMESTAMP WITHOUT TIME ZONE
 );
 CREATE TABLE IF NOT EXISTS
     items
@@ -45,7 +46,7 @@ CREATE TABLE IF NOT EXISTS
     created   TIMESTAMP WITHOUT TIME ZONE
 );
 CREATE INDEX index_users ON users(id, name, email);
-CREATE INDEX index_requests ON requests(id, description, requestor_id);
+CREATE INDEX index_requests ON requests(id, description, requester_id);
 CREATE INDEX index_items ON items(id, name, description, is_available, owner_id, request_id);
 CREATE INDEX index_bookings ON bookings(id, start_date, end_date, item_id, booker_id, status);
 CREATE INDEX index_comments ON comments(id, text, item_id, author_id, created);
