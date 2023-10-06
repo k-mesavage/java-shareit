@@ -21,8 +21,8 @@ services:
     environment:
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
-      - SPRING_DATASOURCE_USERNAME=hi
-      - SPRING_DATASOURCE_PASSWORD=wazup
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
   db:
     image: postgres:15-alpine
     container_name: db
@@ -30,8 +30,7 @@ services:
       - "6541:5432"
     volumes:
       - ./server/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./pgdata:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=shareit
-      - POSTGRES_USER=good
-      - POSTGRES_PASSWORD=bye
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
