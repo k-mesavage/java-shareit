@@ -36,7 +36,7 @@ public class ObjectChecker {
 
     public void userAccess(Long userId, Long ownerId) {
         if (!Objects.equals(userId, ownerId)) {
-            throw new ObjectNotFoundException("User Access Exception");
+            throw new BadRequestException("User Access Exception");
         }
     }
 
