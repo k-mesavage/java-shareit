@@ -34,8 +34,8 @@ public class BookingController {
 
     @PatchMapping("/{bookingId}")
     public BookingDto updateBooking(@RequestHeader(X_SHARER_USER_ID) Long userId,
-                                     @PathVariable Long bookingId,
-                                     @RequestParam boolean approved) {
+                                    @PathVariable Long bookingId,
+                                    @RequestParam(value = "approved") Boolean approved) {
         log.info("Начало обработки запроса на подтверждение бронирования");
         BookingDto booking = service.updateBooking(approved, bookingId, userId);
         log.info("Окончание обработки запроса на подтверждение бронирования");
@@ -53,7 +53,7 @@ public class BookingController {
 
     @GetMapping("/owner")
     public List<BookingDto> getAllItemsBookingByOwner(@RequestHeader(X_SHARER_USER_ID) Long userId,
-                                                 @RequestParam(defaultValue = DEFAULT_STATE_VALUE) String state,
+                                                      @RequestParam(defaultValue = DEFAULT_STATE_VALUE) String state,
                                                       @RequestParam(defaultValue = DEFAULT_FROM_VALUE) int from,
                                                       @RequestParam(defaultValue = DEFAULT_SIZE_VALUE) int size) {
         log.info("Начало обработки запроса на получение списка бронирований владельцем");
@@ -64,7 +64,7 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> getAllBookingsByUser(@RequestHeader(X_SHARER_USER_ID) Long userId,
-                                           @RequestParam(defaultValue = DEFAULT_STATE_VALUE) String state,
+                                                 @RequestParam(defaultValue = DEFAULT_STATE_VALUE) String state,
                                                  @RequestParam(defaultValue = DEFAULT_FROM_VALUE) int from,
                                                  @RequestParam(defaultValue = DEFAULT_SIZE_VALUE) int size) {
         log.info("Начало обработки запроса на получение списка бронирований");

@@ -32,11 +32,11 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    public ResponseEntity<Object> updateBooking(@RequestParam Boolean approved,
+    public ResponseEntity<Object> updateBooking(@RequestHeader(X_SHARER_USER_ID) Long userId,
                                                 @PathVariable Long bookingId,
-                                                @RequestHeader(X_SHARER_USER_ID) Long userId) {
+                                                @RequestParam(value = "approved", required = false) boolean approved) {
         log.info("Path booking {}, approved={}. userId={}", bookingId, approved, userId);
-        return bookingClient.patchBooking(approved, bookingId, userId);
+        return bookingClient.updateBooking(bookingId, approved, userId);
     }
 
     @GetMapping("/{bookingId}")
