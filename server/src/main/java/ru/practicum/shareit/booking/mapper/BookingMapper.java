@@ -8,9 +8,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.storage.BookingStorage;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.user.mapper.UserMapper;
-import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,11 +18,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingMapper {
 
-    private final UserStorage userStorage;
 
     private final UserMapper userMapper;
-
-    private final ItemStorage itemStorage;
 
     private final ItemMapper itemMapper;
 
@@ -58,13 +53,12 @@ public class BookingMapper {
 
     public ItemDto addShortBooking(ItemDto itemDto) {
         Booking lastBooking = bookingStorage
-                .findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(itemDto.getId(),
-                        LocalDateTime.now(),
-                        "APPROVED");
+                .findFirstByItemIdAndStartIsBeforeOrderByStartDesc(itemDto.getId(),
+                        LocalDateTime.now());
         Booking nextBooking = bookingStorage
-                .findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(itemDto.getId(),
-                        LocalDateTime.now(),
-                        "APPROVED");
+                .getFirstByItemIdAndStatusAndStartIsAfterOrderByStartAsc(itemDto.getId(),
+                        "APPROVED",
+                        LocalDateTime.now());
         if (lastBooking != null) {
             itemDto.setLastBooking(toShortBookingDto(lastBooking));
         }

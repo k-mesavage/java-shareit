@@ -66,6 +66,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingStorage.getReferenceById(bookingId);
         Item item = itemStorage.getReferenceById(booking.getItem().getId());
         User owner = userStorage.getReferenceById(item.getOwner().getId());
+        objectChecker.belongingCheck(userId, item.getOwner().getId(), booking.getBooker().getId());
         objectChecker.userAccess(userId, owner.getId());
         if (approved) {
             objectChecker.reApprove(booking);
@@ -83,9 +84,6 @@ public class BookingServiceImpl implements BookingService {
         if (userType.equals(UserType.USER)) {
             objectChecker.userFound(bookerId);
             objectChecker.pageRequestLegal(from, size);
-            if (from < 0 || size < 0) {
-                throw new IllegalArgumentException("Page Request Exception");
-            }
             PageRequest pageRequest = PageRequest.of(from > 0 ? from / size : 0, size);
             return getAllBookingsForUserOrOwnerByUserIdAndState(bookerId, state, userType, pageRequest);
         }

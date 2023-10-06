@@ -36,7 +36,13 @@ public class ObjectChecker {
 
     public void userAccess(Long userId, Long ownerId) {
         if (!Objects.equals(userId, ownerId)) {
-            throw new BadRequestException("User Access Exception");
+            throw new ObjectNotFoundException("User Access Exception");
+        }
+    }
+
+    public void belongingCheck(Long id1, Long id2, Long id3) {
+        if (!Objects.equals(id1, id2) && !Objects.equals(id3, id1)) {
+            throw new InternalError("Internal exception");
         }
     }
 

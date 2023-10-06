@@ -59,13 +59,12 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
             "where i.owner.id = (?1) and b.status like (?2) order by b.start desc")
     List<Booking> findAllByItemOwnerIdAndStatusOrderByStartDesc(Long userId, String status, Pageable pageable);
 
-    Booking findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(Long itemId,
-                                                                     LocalDateTime dateTime,
-                                                                     String status);
+    Booking findFirstByItemIdAndStartIsBeforeOrderByStartDesc(Long itemId,
+                                                          LocalDateTime dateTime);
 
-    Booking findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(Long itemId,
-                                                                   LocalDateTime dateTime,
-                                                                   String status);
+    Booking getFirstByItemIdAndStatusAndStartIsAfterOrderByStartAsc(Long itemId,
+                                                                    String status,
+                                                           LocalDateTime dateTime);
 
     Booking findFirstByItemIdAndBookerIdAndStatusAndEndBefore(Long itemId,
                                                               Long userId,
