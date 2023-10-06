@@ -2,13 +2,10 @@ package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.validation.CreateConstraint;
-import ru.practicum.shareit.validation.UpdateConstraint;
 
 import java.util.List;
 
@@ -51,7 +48,7 @@ public class ItemController {
 
     @PostMapping
     public ItemDto addItem(@RequestHeader(X_SHARER_USER_ID) Long userId,
-                        @RequestBody @Validated(CreateConstraint.class) ItemDto item) {
+                        @RequestBody ItemDto item) {
         log.info("Начало обработки запроса на добавление вещи пользователем {}", userId);
         ItemDto newItem = itemService.addItem(userId, item);
         log.info("Окончание обработки запроса на добавление вещи пользователем {}", userId);
@@ -61,7 +58,7 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@PathVariable Long itemId,
                               @RequestHeader(X_SHARER_USER_ID) Long userId,
-                              @RequestBody @Validated(UpdateConstraint.class) ItemDto itemDto) {
+                              @RequestBody ItemDto itemDto) {
         log.info("Начало обработки запроса на обновление информации о вещи {}", itemId);
         ItemDto updatedItem = itemService.updateItem(itemId, userId, itemDto);
         log.info("Окончание обработки запроса на обновление информации о вещи {}", itemId);
@@ -79,7 +76,7 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
     public CommentDto addComment(@RequestHeader(X_SHARER_USER_ID) Long userId,
                                  @PathVariable Long itemId,
-                                 @RequestBody @Validated (CreateConstraint.class) CommentDto commentDto) {
+                                 @RequestBody CommentDto commentDto) {
 
         CommentDto newComment = itemService.addComment(userId, itemId, commentDto);
         log.info("User {} add comment for Item {}", userId, itemId);

@@ -39,6 +39,6 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Throwable ex) {
         log.info("Произошла непредвиденная ошибка: {}", ex.getMessage(), ex);
-        return new ErrorResponse("Произошла непредвиденная ошибка");
+        return new ErrorResponse("Произошла непредвиденная ошибка" + ex.getMessage());
     }
 }

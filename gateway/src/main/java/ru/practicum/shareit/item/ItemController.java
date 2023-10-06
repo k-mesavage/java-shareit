@@ -20,18 +20,20 @@ import static ru.practicum.shareit.utility.HttpHeader.X_SHARER_USER_ID;
 public class ItemController {
 
     private final ItemClient itemClient;
+    private static final String DEFAULT_FROM_VALUE = "0";
+    private static final String DEFAULT_SIZE_VALUE = "20";
 
     @GetMapping("/{itemId}")
     public ResponseEntity<Object> getItemById(@RequestHeader(X_SHARER_USER_ID) Long userId,
-                                                     @PathVariable Long itemId) {
+                                              @PathVariable Long itemId) {
         log.info("Get item by id {}", itemId);
         return itemClient.getItemById(userId, itemId);
     }
 
     @GetMapping
     public ResponseEntity<Object> getAllItems(@RequestHeader(X_SHARER_USER_ID) Long userId,
-                                       @RequestParam(defaultValue = "0") int from,
-                                       @RequestParam(defaultValue = "10") int size) {
+                                              @RequestParam(defaultValue = DEFAULT_FROM_VALUE) int from,
+                                              @RequestParam(defaultValue = DEFAULT_SIZE_VALUE) int size) {
         log.info("Find all items by user id {}", userId);
         return itemClient.findAllItems(userId, from, size);
     }
@@ -39,8 +41,8 @@ public class ItemController {
     @GetMapping("/search")
     public ResponseEntity<Object> searchItems(@RequestParam String text,
                                               @RequestHeader(X_SHARER_USER_ID) Long userId,
-                                              @RequestParam(defaultValue = "0") int from,
-                                              @RequestParam(defaultValue = "10") int size) {
+                                              @RequestParam(defaultValue = DEFAULT_FROM_VALUE) int from,
+                                              @RequestParam(defaultValue = DEFAULT_SIZE_VALUE) int size) {
         log.info("Find items by request");
         return itemClient.findItemsByRequest(text, userId, from, size);
     }

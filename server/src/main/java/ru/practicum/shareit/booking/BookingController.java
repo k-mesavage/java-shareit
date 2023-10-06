@@ -2,13 +2,11 @@ package ru.practicum.shareit.booking;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.WorkingBookingDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.params.UserType;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.validation.CreateConstraint;
 
 import java.util.List;
 
@@ -21,11 +19,13 @@ import static ru.practicum.shareit.utility.HttpHeader.X_SHARER_USER_ID;
 public class BookingController {
 
     private final BookingService service;
+    private static final String DEFAULT_FROM_VALUE = "0";
+    private static final String DEFAULT_SIZE_VALUE = "20";
+    private static final String DEFAULT_STATE_VALUE = "ALL";
 
     @PostMapping
     public BookingDto addBooking(@RequestHeader(X_SHARER_USER_ID) Long userId,
-                                 @RequestBody
-                                 @Validated(CreateConstraint.class) WorkingBookingDto workingBookingDto) {
+                                 @RequestBody WorkingBookingDto workingBookingDto) {
         log.info("Начало обработки запроса на добавление бронирования");
         BookingDto newBooking = service.addBooking(userId, workingBookingDto);
         log.info("Окончание обработки запроса на добавление бронирования");
@@ -33,11 +33,11 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingDto approveBooking(@RequestHeader(X_SHARER_USER_ID) Long userId,
+    public BookingDto updateBooking(@RequestHeader(X_SHARER_USER_ID) Long userId,
                                      @PathVariable Long bookingId,
                                      @RequestParam boolean approved) {
         log.info("Начало обработки запроса на подтверждение бронирования");
-        BookingDto booking = service.requestBooking(approved, bookingId, userId);
+        BookingDto booking = service.updateBooking(approved, bookingId, userId);
         log.info("Окончание обработки запроса на подтверждение бронирования");
         return booking;
     }
@@ -53,9 +53,9 @@ public class BookingController {
 
     @GetMapping("/owner")
     public List<BookingDto> getAllItemsBookingByOwner(@RequestHeader(X_SHARER_USER_ID) Long userId,
-                                                 @RequestParam(defaultValue = "ALL") String state,
-                                                      @RequestParam(defaultValue = "0") int from,
-                                                      @RequestParam(defaultValue = "10") int size) {
+                                                 @RequestParam(defaultValue = DEFAULT_STATE_VALUE) String state,
+                                                      @RequestParam(defaultValue = DEFAULT_FROM_VALUE) int from,
+                                                      @RequestParam(defaultValue = DEFAULT_SIZE_VALUE) int size) {
         log.info("Начало обработки запроса на получение списка бронирований владельцем");
         List<BookingDto> bookings = service.getAllBookingsByUser(UserType.OWNER, userId, state, from, size);
         log.info("Окончание обработки запроса на получение списка бронирований владельцем");
@@ -64,9 +64,9 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> getAllBookingsByUser(@RequestHeader(X_SHARER_USER_ID) Long userId,
-                                           @RequestParam(defaultValue = "ALL") String state,
-                                                 @RequestParam(defaultValue = "0") int from,
-                                                 @RequestParam(defaultValue = "10") int size) {
+                                           @RequestParam(defaultValue = DEFAULT_STATE_VALUE) String state,
+                                                 @RequestParam(defaultValue = DEFAULT_FROM_VALUE) int from,
+                                                 @RequestParam(defaultValue = DEFAULT_SIZE_VALUE) int size) {
         log.info("Начало обработки запроса на получение списка бронирований");
         List<BookingDto> bookings = service.getAllBookingsByUser(UserType.USER, userId, state, from, size);
         log.info("Окончание обработки запроса на получение списка бронирований");

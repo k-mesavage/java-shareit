@@ -10,7 +10,7 @@ public interface BookingService {
 
     BookingDto addBooking(Long bookerId, WorkingBookingDto workingBookingDto);
 
-    BookingDto requestBooking(Boolean approved, Long bookingId, Long userId);
+    BookingDto updateBooking(Boolean approved, Long bookingId, Long userId);
 
     BookingDto getBookingById(Long bookingId, Long userId);
 

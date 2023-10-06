@@ -18,13 +18,13 @@ public class UserController {
     private final UserClient userClient;
 
     @PostMapping
-    public ResponseEntity<Object> addUser(@RequestBody @Validated(CreateConstraint.class) UserDto gatewayUserDto) {
+    public ResponseEntity<Object> addUser(@Validated(CreateConstraint.class) @RequestBody UserDto userDto) {
         log.info("Add user");
-        return userClient.addUser(gatewayUserDto);
+        return userClient.addUser(userDto);
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<Object> getUserById(@PathVariable("userId") Long userId) {
+    public ResponseEntity<Object> getUserById(@PathVariable Long userId) {
         log.info("Get user by id {}", userId);
         return userClient.getUserById(userId);
     }
@@ -37,9 +37,9 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     public ResponseEntity<Object> updateUser(@PathVariable Long userId,
-                                             @RequestBody @Validated(UpdateConstraint.class) UserDto gatewayUserDto) {
+                                             @RequestBody @Validated(UpdateConstraint.class) UserDto userDto) {
         log.info("Update user by id {}", userId);
-        return userClient.updateUser(gatewayUserDto, userId);
+        return userClient.updateUser(userId, userDto);
     }
 
     @DeleteMapping("/{userId}")

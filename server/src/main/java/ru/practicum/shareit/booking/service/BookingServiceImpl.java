@@ -62,7 +62,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public BookingDto requestBooking(Boolean approved, Long bookingId, Long userId) {
+    public BookingDto updateBooking(Boolean approved, Long bookingId, Long userId) {
         Booking booking = bookingStorage.getReferenceById(bookingId);
         Item item = itemStorage.getReferenceById(booking.getItem().getId());
         User owner = userStorage.getReferenceById(item.getOwner().getId());

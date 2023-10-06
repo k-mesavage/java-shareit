@@ -39,7 +39,7 @@ public class ItemClient extends BaseClient {
         return patch("/" + itemId, userId, gatewayItemDto);
     }
 
-    public ResponseEntity<Object> getItemById(Long itemId, Long userId) {
+    public ResponseEntity<Object> getItemById(Long userId, Long itemId) {
         return get("/" + itemId, userId);
     }
 

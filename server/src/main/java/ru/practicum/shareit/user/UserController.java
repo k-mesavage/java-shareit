@@ -2,12 +2,9 @@ package ru.practicum.shareit.user;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.validation.CreateConstraint;
-import ru.practicum.shareit.validation.UpdateConstraint;
 
 import java.util.List;
 
@@ -20,7 +17,7 @@ public class UserController {
     private final UserService service;
 
     @PostMapping
-    public UserDto addUser(@RequestBody @Validated(CreateConstraint.class) UserDto userDto) {
+    public UserDto addUser(@RequestBody UserDto userDto) {
         log.info("Начало обработки запроса на добавление пользователя");
         UserDto user = service.addUser(userDto);
         log.info("Окончание обработки запроса на добавление пользователя");
@@ -44,8 +41,8 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public UserDto updateUser(@PathVariable Long userId,
-                              @RequestBody @Validated(UpdateConstraint.class) UserDto userDto) {
+    public UserDto updateUser(@PathVariable("userId") Long userId,
+                              @RequestBody UserDto userDto) {
         log.info("Начало обработки запроса на обновление пользователя {}", userId);
         UserDto user = service.updateUser(userDto, userId);
         log.info("Окончание обработки запроса на обновление пользователя {}", userId);

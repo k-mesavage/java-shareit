@@ -7,13 +7,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
-import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.WorkingBookingDto;
 import ru.practicum.shareit.client.BaseClient;
 
 import java.util.Map;
 
 @Service
 public class BookingClient extends BaseClient {
+
     private static final String API_PREFIX = "/bookings";
 
     @Autowired
@@ -26,15 +27,11 @@ public class BookingClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> createBooking(BookingDto dto, Long userId) {
-        if (!isStartBeforeEnd(dto)) {
-            throw new IllegalArgumentException("Invalid booking time " +
-                    "start: " + dto.getStart() + " end: " + dto.getEnd() + " now: ");
-        }
+    public ResponseEntity<Object> addBooking(WorkingBookingDto dto, Long userId) {
         return post("", userId, dto);
     }
 
-    public ResponseEntity<Object> patchBooking(Long bookingId, Boolean approved, Long userId) {
+    public ResponseEntity<Object> patchBooking(Boolean approved, Long bookingId, Long userId) {
         Map<String, Object> parameters = Map.of(
                 "approved", approved
         );
@@ -61,9 +58,5 @@ public class BookingClient extends BaseClient {
                 "size", size
         );
         return get("/owner?state={state}&from={from}&size={size}", userId, parameters);
-    }
-
-    private boolean isStartBeforeEnd(BookingDto dto) {
-        return dto.getStart().isBefore(dto.getEnd());
     }
 }
