@@ -1,5 +1,2 @@
 # java-shareit
-Сервис запроса и аренды вещей с коментариями. Репозиторий шаблонов.
-![kandinsky-download-1696832372391.jpg](kandinsky-download-1696832372391.jpg)
-
-![Снимок экрана 2023-10-09 в 09.22.01.png](%D0%A1%D0%BD%D0%B8%D0%BC%D0%BE%D0%BA%20%D1%8D%D0%BA%D1%80%D0%B0%D0%BD%D0%B0%202023-10-09%20%D0%B2%2009.22.01.png)
+Template repository for Shareit project.

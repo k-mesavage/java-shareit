@@ -18,6 +18,7 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse badRequest(RuntimeException ex) {
         log.info("Получен статус 400 Bad Request {}", ex.getMessage(), ex);
+        ex.printStackTrace();
         return new ErrorResponse(String.format("Bad Request Exception \"%s\"", ex.getMessage()));
     }
 
@@ -25,6 +26,7 @@ public class ControllerExceptionHandler {
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public ErrorResponse objectNotFound(RuntimeException ex) {
         log.info("Получен статус 404 Not Found {}", ex.getMessage(), ex);
+        ex.printStackTrace();
         return new ErrorResponse(String.format("\"%s\". Status 404", ex.getMessage()));
     }
 
@@ -32,6 +34,7 @@ public class ControllerExceptionHandler {
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse unsupportedStatus(RuntimeException ex) {
         log.info("Получен статус 500 {}", ex.getMessage(), ex);
+        ex.printStackTrace();
         return new ErrorResponse("Unknown state: " + ex.getMessage());
     }
 
@@ -39,6 +42,7 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Throwable ex) {
         log.info("Произошла непредвиденная ошибка: {}", ex.getMessage(), ex);
+        ex.printStackTrace();
         return new ErrorResponse("Произошла непредвиденная ошибка" + ex.getMessage());
     }
 }
